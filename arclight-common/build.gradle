@@ -4,7 +4,7 @@ buildscript {
         maven { url = 'https://repo.spongepowered.org/repository/maven-public' }
         mavenCentral()
         maven { url = 'https://maven.izzel.io/releases' }
-    maven { url = 'https://repo.papermc.io/repository/maven-public/' }
+        maven { url = 'https://repo.papermc.io/repository/maven-public/' }
         // maven { url = 'https://maven.parchmentmc.org' }
     }
     dependencies {
@@ -51,13 +51,14 @@ repositories {
     maven { url = 'https://hub.spigotmc.org/nexus/content/repositories/snapshots/' }
     maven { url = 'https://files.minecraftforge.net/maven/' }
     maven { url = 'https://maven.izzel.io/releases' }
+    maven { url = 'https://repo.papermc.io/repository/maven-public/' }
     maven { url = 'https://jitpack.io/' }
     mavenCentral()
 }
 
 dependencies {
     minecraft "net.minecraftforge:forge:$minecraftVersion-$forgeVersion"
-    implementation "org.spigotmc:spigot-api:$minecraftVersion-R0.1-SNAPSHOT@jar"
+    implementation "io.papermc.paper:paper-api:$paperApiVersion"
     implementation 'org.jetbrains:annotations:23.0.0'
 
     implementation "org.spongepowered:mixin:$mixinVersion"
@@ -78,6 +79,8 @@ dependencies {
     // Bundle Paper API for plugin-side binary linkage. Paper server implementation
     // patches are still a separate compatibility milestone.
     embed "io.papermc.paper:paper-api:$paperApiVersion"
+
+    testImplementation "junit:junit:4.13.2"
 }
 
 jar {
