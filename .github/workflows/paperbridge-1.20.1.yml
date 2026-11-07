@@ -35,6 +35,9 @@ jobs:
       - name: Prepare and remap Bukkit sources
         run: ./gradlew cleanBuild remapSpigotJar idea --no-daemon --stacktrace
 
+      - name: Run Paper descriptor adapter tests
+        run: ./gradlew :arclight-common:test --no-daemon --stacktrace
+
       - name: Build Arclight Forge 1.20.1
         run: ./gradlew build collect --no-daemon --stacktrace
 
