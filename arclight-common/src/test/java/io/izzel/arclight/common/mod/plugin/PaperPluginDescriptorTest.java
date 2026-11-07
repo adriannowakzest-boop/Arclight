@@ -21,6 +21,8 @@ public class PaperPluginDescriptorTest {
             "version: '1.0.0'\n" +
             "main: example.SamplePlugin\n" +
             "api-version: '1.20.1'\n" +
+            "libraries:\n" +
+            "  - org.example:sample-library:1.2.3\n" +
             "dependencies:\n" +
             "  server:\n" +
             "    CoreLib:\n" +
@@ -43,6 +45,7 @@ public class PaperPluginDescriptorTest {
         assertEquals("1.0.0", description.getVersion());
         assertEquals("example.SamplePlugin", description.getMain());
         assertEquals("1.20", description.getAPIVersion());
+        assertTrue(description.getLibraries().contains("org.example:sample-library:1.2.3"));
         assertTrue(description.getDepend().contains("CoreLib"));
         assertTrue(description.getSoftDepend().contains("PlaceholderAPI"));
         assertTrue(description.getLoadBefore().contains("LatePlugin"));
