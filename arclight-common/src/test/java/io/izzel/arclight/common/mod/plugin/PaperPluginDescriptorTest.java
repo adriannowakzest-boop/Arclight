@@ -70,6 +70,22 @@ public class PaperPluginDescriptorTest {
     }
 
     @Test(expected = InvalidDescriptionException.class)
+    public void rejectsRequiredDependencyLoadedAfterPlugin() throws Exception {
+        File jar = createJar("paper-plugin.yml",
+            "name: ConflictingDependencyPlugin\\n" +
+            "version: '1.0'\\n" +
+            "main: example.Plugin\\n" +
+            "dependencies:\\n" +
+            "  server:\\n" +
+            "    CoreLib:\\n" +
+            "      required: true\\n" +
+            "      load: AFTER\\n" +
+            "      join-classpath: true\\n"
+        );
+        PaperPluginDescriptor.read(jar);
+    }
+
+    @Test(expected = InvalidDescriptionException.class)
     public void rejectsDisabledDependencyClasspath() throws Exception {
         File jar = createJar("paper-plugin.yml",
             "name: IsolatedPlugin\n" +
