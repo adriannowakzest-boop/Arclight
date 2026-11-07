@@ -51,3 +51,23 @@ and <a href="https://www.yourkit.com/youmonitor/">YourKit YouMonitor</a>.
 [![](.github/nexusnode.gif)](https://nexusnode.com/minecraft.php)
 
 Get 10% off hosting server with promocode **ARCLIGHT** at [NEXUSNODE](https://nexusnode.com/minecraft.php)
+
+
+## PaperBridge development branch (Minecraft 1.20.1)
+
+The `paperbridge-1.20.1` branch is an experimental Forge hybrid based on Arclight Trials.
+
+- Minecraft: `1.20.1`
+- Forge: `47.4.28`
+- Java: `17`
+- SpongePowered Mixin: `0.8.5` (official Sponge release line)
+- Paper API: `1.20.1-R0.1-SNAPSHOT` is bundled as a first binary-linkage step for plugins compiled against Paper API.
+
+**Compatibility status:** this does not yet implement the full Paper server internals or the separate `paper-plugin.yml` loader. Plugins that only use Bukkit/Spigot APIs remain the baseline; Paper-only methods and features must be implemented and tested before a plugin can be called compatible.
+
+### Build
+
+```bash
+./gradlew cleanBuild remapSpigotJar idea --no-daemon
+./gradlew build collect --no-daemon
+```
