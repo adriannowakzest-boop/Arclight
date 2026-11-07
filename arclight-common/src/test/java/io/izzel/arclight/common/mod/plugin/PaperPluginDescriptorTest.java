@@ -27,7 +27,7 @@ public class PaperPluginDescriptorTest {
             "  server:\n" +
             "    CoreLib:\n" +
             "      required: true\n" +
-            "      load: BEFORE\n" +
+            "      load: OMIT\n" +
             "      join-classpath: true\n" +
             "    PlaceholderAPI:\n" +
             "      required: false\n" +
@@ -36,6 +36,10 @@ public class PaperPluginDescriptorTest {
             "    LatePlugin:\n" +
             "      required: false\n" +
             "      load: AFTER\n" +
+            "      join-classpath: true\n" +
+            "    EarlyPlugin:\n" +
+            "      required: false\n" +
+            "      load: BEFORE\n" +
             "      join-classpath: true\n"
         );
 
@@ -48,7 +52,8 @@ public class PaperPluginDescriptorTest {
         assertTrue(description.getLibraries().contains("org.example:sample-library:1.2.3"));
         assertTrue(description.getDepend().contains("CoreLib"));
         assertTrue(description.getSoftDepend().contains("PlaceholderAPI"));
-        assertTrue(description.getLoadBefore().contains("LatePlugin"));
+        assertTrue(description.getSoftDepend().contains("LatePlugin"));
+        assertTrue(description.getLoadBefore().contains("EarlyPlugin"));
     }
 
     @Test
@@ -72,10 +77,10 @@ public class PaperPluginDescriptorTest {
         PaperPluginDescriptor.read(jar);
     }
 
-    @Test(expected = InvalidDescriptionException.class)
-    public void rejectsRequiredDependencyLoadedAfterPlugin() throws Exception {
+    @Test
+    public void translatesRequiredAfterDependency() throws Exception {
         File jar = createJar("paper-plugin.yml",
-            "name: ConflictingDependencyPlugin\\n" +
+            "name: OrderedDependencyPlugin\\n" +
             "version: '1.0'\\n" +
             "main: example.Plugin\\n" +
             "dependencies:\\n" +
@@ -83,6 +88,25 @@ public class PaperPluginDescriptorTest {
             "    CoreLib:\\n" +
             "      required: true\\n" +
             "      load: AFTER\\n" +
+            "      join-classpath: true\\n"
+        );
+
+        PluginDescriptionFile description = PaperPluginDescriptor.read(jar);
+        assertNotNull(description);
+        assertTrue(description.getDepend().contains("CoreLib"));
+    }
+
+    @Test(expected = InvalidDescriptionException.class)
+    public void rejectsRequiredBeforeDependencyThatLegacyLoaderCannotExpress() throws Exception {
+        File jar = createJar("paper-plugin.yml",
+            "name: EarlyDependencyPlugin\\n" +
+            "version: '1.0'\\n" +
+            "main: example.Plugin\\n" +
+            "dependencies:\\n" +
+            "  server:\\n" +
+            "    CoreLib:\\n" +
+            "      required: true\\n" +
+            "      load: BEFORE\\n" +
             "      join-classpath: true\\n"
         );
         PaperPluginDescriptor.read(jar);
