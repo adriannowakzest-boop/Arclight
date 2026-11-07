@@ -65,7 +65,7 @@ public abstract class JavaPluginLoaderMixin implements JavaPluginLoaderBridge {
      * Paper-only descriptors are translated to the legacy JavaPlugin descriptor model.
      * Standard plugin.yml remains authoritative when a jar contains both descriptors.
      */
-    @Inject(method = "getPluginDescription", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "getPluginDescription(Ljava/io/File;)Lorg/bukkit/plugin/PluginDescriptionFile;", at = @At("HEAD"), cancellable = true)
     private void arclight$paperPluginDescriptor(File file, CallbackInfoReturnable<PluginDescriptionFile> cir) throws InvalidDescriptionException {
         PluginDescriptionFile description = PaperPluginDescriptor.read(file);
         if (description != null) {
