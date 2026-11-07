@@ -80,15 +80,15 @@ public class PaperPluginDescriptorTest {
     @Test
     public void translatesRequiredAfterDependency() throws Exception {
         File jar = createJar("paper-plugin.yml",
-            "name: OrderedDependencyPlugin\\n" +
-            "version: '1.0'\\n" +
-            "main: example.Plugin\\n" +
-            "dependencies:\\n" +
-            "  server:\\n" +
-            "    CoreLib:\\n" +
-            "      required: true\\n" +
-            "      load: AFTER\\n" +
-            "      join-classpath: true\\n"
+            "name: OrderedDependencyPlugin\n" +
+            "version: '1.0'\n" +
+            "main: example.Plugin\n" +
+            "dependencies:\n" +
+            "  server:\n" +
+            "    CoreLib:\n" +
+            "      required: true\n" +
+            "      load: AFTER\n" +
+            "      join-classpath: true\n"
         );
 
         PluginDescriptionFile description = PaperPluginDescriptor.read(jar);
@@ -99,15 +99,15 @@ public class PaperPluginDescriptorTest {
     @Test(expected = InvalidDescriptionException.class)
     public void rejectsRequiredBeforeDependencyThatLegacyLoaderCannotExpress() throws Exception {
         File jar = createJar("paper-plugin.yml",
-            "name: EarlyDependencyPlugin\\n" +
-            "version: '1.0'\\n" +
-            "main: example.Plugin\\n" +
-            "dependencies:\\n" +
-            "  server:\\n" +
-            "    CoreLib:\\n" +
-            "      required: true\\n" +
-            "      load: BEFORE\\n" +
-            "      join-classpath: true\\n"
+            "name: EarlyDependencyPlugin\n" +
+            "version: '1.0'\n" +
+            "main: example.Plugin\n" +
+            "dependencies:\n" +
+            "  server:\n" +
+            "    CoreLib:\n" +
+            "      required: true\n" +
+            "      load: BEFORE\n" +
+            "      join-classpath: true\n"
         );
         PaperPluginDescriptor.read(jar);
     }
