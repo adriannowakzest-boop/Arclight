@@ -82,6 +82,7 @@ dependencies {
     embed "io.papermc.paper:paper-api:$paperApiVersion"
 
     testImplementation "junit:junit:4.13.2"
+    testImplementation "io.papermc.paper:paper-api:$paperApiVersion"
 }
 
 jar {
