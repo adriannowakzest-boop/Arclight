@@ -77,6 +77,6 @@ The `paperbridge-1.20.1` branch is an experimental Forge hybrid based on Arcligh
 
 The `paperbridge-1.20.1` branch has an experimental compatibility adapter for jars containing only `paper-plugin.yml`. It translates the basic `JavaPlugin` metadata and supported server dependencies into the legacy Bukkit descriptor model.
 
-The adapter deliberately rejects Paper bootstrapper classes, custom Paper plugin loaders, bootstrap dependencies, `join-classpath: false`, and required dependencies declared with `load: AFTER`. It does not implement Paper's isolated plugin class loaders, bootstrap lifecycle, or Paper-specific lifecycle/command APIs. Jars containing both descriptors use `plugin.yml`.
+The adapter deliberately rejects Paper bootstrapper classes, custom Paper plugin loaders, bootstrap dependencies, `join-classpath: false`, and required dependencies declared with `load: AFTER`. It maps dependency ordering to Bukkit's `depend`, `softdepend`, and `loadbefore`, so `load: OMIT` may gain legacy Bukkit ordering semantics. It does not implement Paper's isolated plugin class loaders, bootstrap lifecycle, or Paper-specific lifecycle/command APIs. Jars containing both descriptors use `plugin.yml`.
 
 This adapter is not equivalent to Paper's native plugin provider and is not a claim of general Paper plugin compatibility.
