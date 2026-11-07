@@ -4,6 +4,7 @@ buildscript {
         maven { url = 'https://repo.spongepowered.org/repository/maven-public' }
         mavenCentral()
         maven { url = 'https://maven.izzel.io/releases' }
+    maven { url = 'https://repo.papermc.io/repository/maven-public/' }
         // maven { url = 'https://maven.parchmentmc.org' }
     }
     dependencies {
@@ -74,8 +75,9 @@ dependencies {
     implementation "io.izzel:tools:$toolsVersion"
     implementation "io.izzel.arclight:arclight-api:$apiVersion"
     implementation project(':i18n-config')
-    embed 'net.md-5:bungeecord-chat:1.16-R0.4@jar'
-    embed "org.spigotmc:spigot-api:$minecraftVersion-R0.1-SNAPSHOT@jar"
+    // Bundle Paper API for plugin-side binary linkage. Paper server implementation
+    // patches are still a separate compatibility milestone.
+    embed "io.papermc.paper:paper-api:$paperApiVersion"
 }
 
 jar {
