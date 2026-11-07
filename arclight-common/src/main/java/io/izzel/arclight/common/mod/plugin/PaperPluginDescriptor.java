@@ -153,17 +153,19 @@ public final class PaperPluginDescriptor {
                     );
                 }
 
-                if ("AFTER".equals(relativeOrder)) {
+                if ("BEFORE".equals(relativeOrder)) {
                     if (isRequired) {
                         throw new InvalidDescriptionException(
-                            "Required Paper dependency '" + dependencyName + "' uses load: AFTER. " +
-                            "The legacy Bukkit loader cannot preserve this ordering and required-dependency semantics."
+                            "Required Paper dependency '" + dependencyName + "' uses load: BEFORE. " +
+                            "The legacy Bukkit loader cannot enforce both required presence and loading before that dependency."
                         );
                     }
                     loadBefore.add(dependencyName);
                 } else if (isRequired) {
+                    // Bukkit depend loads this plugin after the dependency, matching Paper AFTER.
                     required.add(dependencyName);
                 } else {
+                    // softdepend preserves optional availability and AFTER ordering where possible.
                     optional.add(dependencyName);
                 }
             }
