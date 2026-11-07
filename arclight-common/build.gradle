@@ -58,7 +58,8 @@ repositories {
 
 dependencies {
     minecraft "net.minecraftforge:forge:$minecraftVersion-$forgeVersion"
-    implementation "io.papermc.paper:paper-api:$paperApiVersion"
+    // Compile CraftBukkit against Spigot API; Paper API is bundled separately for plugin linkage.
+    implementation "org.spigotmc:spigot-api:$minecraftVersion-R0.1-SNAPSHOT@jar"
     implementation 'org.jetbrains:annotations:23.0.0'
 
     implementation "org.spongepowered:mixin:$mixinVersion"
