@@ -47,7 +47,8 @@ Cel: rozwijać Arclight dla Minecraft 1.20.1 tak, aby na jednym serwerze działa
 - [ ] Sprawdzić rejestrację i wyrejestrowywanie komend, eventów, listenerów i schedulerów.
 - [ ] Dodać czytelne komunikaty o brakujących zależnościach, błędach inicjalizacji i niezgodnych wersjach API.
 - [ ] Zaimplementować obsługę `paper-plugin.yml`, jeżeli format jest wspierany przez wybraną wersję Paper 1.20.1; nie zakładać zgodności z późniejszymi wersjami specyfikacji.
-- [ ] Zweryfikować obsługę `libraries`, loadera Paper i zależności między pluginami.
+- [x] Przekazywać `libraries` z `paper-plugin.yml` do Paper `PluginDescriptionFile` i istniejącego `LibraryLoader` (Maven GAV).
+- [ ] Zaimplementować natywny Paper loader i zależności między pluginami.
 - [x] Dodać eksperymentalny fallback `paper-plugin.yml` → `PluginDescriptionFile` dla prostych pluginów JavaPlugin.
 - [x] Mapować podstawowe `dependencies.server` na `depend`, `softdepend` i `loadbefore`.
 - [x] Odrzucać nieobsługiwane bootstrappery, custom loadery, `join-classpath: false` i konfliktowe zależności zamiast ignorować ich semantykę.
