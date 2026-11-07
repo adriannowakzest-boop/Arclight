@@ -72,7 +72,7 @@ dependencies {
     implementation 'org.apache.logging.log4j:log4j-api:2.17.2'
     implementation 'org.apache.logging.log4j:log4j-core:2.17.2'
     implementation 'org.jetbrains:annotations:23.0.0'
-    implementation 'org.spongepowered:mixin:0.8.3'
+    implementation "org.spongepowered:mixin:$mixinVersion"
     implementation 'org.apache.logging.log4j:log4j-jul:2.17.2'
     implementation "net.minecraftforge:fmlloader:${minecraftVersion}-${forgeVersion}"
     for (def lib : embedLibs) {
@@ -177,7 +177,7 @@ task generateInstallerInfo {
                 installer: [
                         minecraft: minecraftVersion,
                         forge    : forgeVersion,
-                        hash     : sha1(project(':arclight-common').file("${project(':arclight-common').buildDir}/arclight_cache/forge-$minecraftVersion-$forgeVersion-installer.jar"))
+                        hash     : sha1(project(':arclight-common').file("build/arclight_cache/forge-$minecraftVersion-$forgeVersion-installer.jar"))
                 ],
                 libraries: artifacts(libs)
         ]
