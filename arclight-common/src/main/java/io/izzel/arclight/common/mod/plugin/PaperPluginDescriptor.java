@@ -128,13 +128,14 @@ public final class PaperPluginDescriptor {
         ConfigurationSection dependencies = paper.getConfigurationSection("dependencies.server");
         if (dependencies != null) {
             for (String dependencyName : dependencies.getKeys(false)) {
-                ConfigurationSection dependency = dependencies.getConfigurationSection(dependencyName);
-                if (dependency == null) {
+                Object dependencyValue = dependencies.getValues(false).get(dependencyName);
+                if (!(dependencyValue instanceof ConfigurationSection)) {
                     throw new InvalidDescriptionException(
                         "Invalid server dependency entry for '" + dependencyName + "'."
                     );
                 }
 
+                ConfigurationSection dependency = (ConfigurationSection) dependencyValue;
                 if (!dependency.getBoolean("join-classpath", true)) {
                     throw new InvalidDescriptionException(
                         "PaperBridge 1.20.1 uses Arclight's legacy plugin class loader and cannot enforce " +
