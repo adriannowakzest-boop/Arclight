@@ -6,6 +6,8 @@ import io.izzel.arclight.api.Unsafe;
 import io.izzel.arclight.common.bridge.bukkit.JavaPluginLoaderBridge;
 import io.izzel.arclight.common.bridge.bukkit.PluginClassLoaderBridge;
 import io.izzel.arclight.common.mod.server.ArclightServer;
+import io.izzel.arclight.common.mod.ArclightMod;
+import io.izzel.arclight.common.mod.plugin.PaperPluginDescriptor;
 import io.izzel.arclight.i18n.ArclightConfig;
 import org.apache.commons.lang3.Validate;
 import org.bukkit.Server;
@@ -25,7 +27,11 @@ import org.objectweb.asm.Type;
 import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.gen.Accessor;
 import org.spongepowered.asm.mixin.gen.Invoker;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import java.io.File;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -54,6 +60,23 @@ public abstract class JavaPluginLoaderMixin implements JavaPluginLoaderBridge {
         Float.parseFloat(System.getProperty("java.class.version")) < 57
             ? "Ljava/lang/invoke/LambdaForm$Hidden;"
             : "Ljdk/internal/vm/annotation/Hidden;";
+
+    /**
+     * Paper-only descriptors are translated to the legacy JavaPlugin descriptor model.
+     * Standard plugin.yml remains authoritative when a jar contains both descriptors.
+     */
+    @Inject(method = "getPluginDescription", at = @At("HEAD"), cancellable = true)
+    private void arclight$paperPluginDescriptor(File file, CallbackInfoReturnable<PluginDescriptionFile> cir) throws InvalidDescriptionException {
+        PluginDescriptionFile description = PaperPluginDescriptor.read(file);
+        if (description != null) {
+            ArclightMod.LOGGER.warn(
+                "PaperBridge: loading {} through the legacy Bukkit plugin loader. " +
+                "Paper bootstrapper/loader, bootstrap dependencies, isolated classpaths, and Paper lifecycle APIs are not implemented.",
+                file.getName()
+            );
+            cir.setReturnValue(description);
+        }
+    }
 
     /**
      * @author InitAuther97
