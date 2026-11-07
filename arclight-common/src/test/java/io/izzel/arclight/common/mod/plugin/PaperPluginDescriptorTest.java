@@ -1,0 +1,102 @@
+package io.izzel.arclight.common.mod.plugin;
+
+import org.bukkit.plugin.InvalidDescriptionException;
+import org.bukkit.plugin.PluginDescriptionFile;
+import org.junit.Test;
+
+import java.io.File;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.util.jar.JarEntry;
+import java.util.jar.JarOutputStream;
+
+import static org.junit.Assert.*;
+
+public class PaperPluginDescriptorTest {
+
+    @Test
+    public void translatesSupportedServerDependencies() throws Exception {
+        File jar = createJar("paper-plugin.yml",
+            "name: SamplePaperPlugin\n" +
+            "version: '1.0.0'\n" +
+            "main: example.SamplePlugin\n" +
+            "api-version: '1.20.1'\n" +
+            "dependencies:\n" +
+            "  server:\n" +
+            "    CoreLib:\n" +
+            "      required: true\n" +
+            "      load: BEFORE\n" +
+            "      join-classpath: true\n" +
+            "    PlaceholderAPI:\n" +
+            "      required: false\n" +
+            "      load: OMIT\n" +
+            "      join-classpath: true\n" +
+            "    LatePlugin:\n" +
+            "      required: false\n" +
+            "      load: AFTER\n" +
+            "      join-classpath: true\n"
+        );
+
+        PluginDescriptionFile description = PaperPluginDescriptor.read(jar);
+        assertNotNull(description);
+        assertEquals("SamplePaperPlugin", description.getName());
+        assertEquals("1.0.0", description.getVersion());
+        assertEquals("example.SamplePlugin", description.getMain());
+        assertEquals("1.20", description.getAPIVersion());
+        assertTrue(description.getDepend().contains("CoreLib"));
+        assertTrue(description.getSoftDepend().contains("PlaceholderAPI"));
+        assertTrue(description.getLoadBefore().contains("LatePlugin"));
+    }
+
+    @Test
+    public void prefersPluginYmlWhenBothDescriptorsExist() throws Exception {
+        File jar = createJar(
+            "plugin.yml", "name: LegacyPlugin\nversion: '2.0'\nmain: example.LegacyPlugin\n",
+            "paper-plugin.yml", "name: PaperPlugin\nversion: '1.0'\nmain: example.PaperPlugin\n"
+        );
+
+        assertNull(PaperPluginDescriptor.read(jar));
+    }
+
+    @Test(expected = InvalidDescriptionException.class)
+    public void rejectsBootstrapperUntilPaperBootstrapRuntimeExists() throws Exception {
+        File jar = createJar("paper-plugin.yml",
+            "name: BootstrapPlugin\n" +
+            "version: '1.0'\n" +
+            "main: example.Plugin\n" +
+            "bootstrapper: example.PluginBootstrap\n"
+        );
+        PaperPluginDescriptor.read(jar);
+    }
+
+    @Test(expected = InvalidDescriptionException.class)
+    public void rejectsDisabledDependencyClasspath() throws Exception {
+        File jar = createJar("paper-plugin.yml",
+            "name: IsolatedPlugin\n" +
+            "version: '1.0'\n" +
+            "main: example.Plugin\n" +
+            "dependencies:\n" +
+            "  server:\n" +
+            "    CoreLib:\n" +
+            "      required: true\n" +
+            "      join-classpath: false\n"
+        );
+        PaperPluginDescriptor.read(jar);
+    }
+
+    private static File createJar(String... entries) throws Exception {
+        if (entries.length % 2 != 0) {
+            throw new IllegalArgumentException("Entries must be name/content pairs");
+        }
+        File jar = Files.createTempFile("paperbridge-plugin-", ".jar").toFile();
+        jar.deleteOnExit();
+        try (JarOutputStream output = new JarOutputStream(Files.newOutputStream(jar))) {
+            for (int i = 0; i < entries.length; i += 2) {
+                output.putNextEntry(new JarEntry(entries[i]));
+                output.write(entries[i + 1].getBytes(StandardCharsets.UTF_8));
+                output.closeEntry();
+            }
+        }
+        return jar;
+    }
+}
