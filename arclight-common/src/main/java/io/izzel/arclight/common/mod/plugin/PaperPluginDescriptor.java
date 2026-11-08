@@ -107,7 +107,7 @@ public final class PaperPluginDescriptor {
         String name = requiredString(paper, "name");
         String version = requiredString(paper, "version");
         String main = requiredString(paper, "main");
-        if (!main.matches("[\p{javaJavaIdentifierStart}][\p{javaJavaIdentifierPart}]*(\.[\p{javaJavaIdentifierStart}][\p{javaJavaIdentifierPart}]*)*")) {
+        if (!main.matches("[\\p{javaJavaIdentifierStart}][\\p{javaJavaIdentifierPart}]*(\\.[\\p{javaJavaIdentifierStart}][\\p{javaJavaIdentifierPart}]*)*")) {
             throw new InvalidDescriptionException("'main' must be a valid Java binary class name: " + main);
         }
         validateStringList(paper, "authors");
