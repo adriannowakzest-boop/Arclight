@@ -181,6 +181,16 @@ public final class PaperPluginDescriptor {
                     );
                 }
 
+                for (String dependencyOption : dependency.getKeys(false)) {
+                    if (!"required".equals(dependencyOption) &&
+                        !"load".equals(dependencyOption) &&
+                        !"join-classpath".equals(dependencyOption)) {
+                        throw new InvalidDescriptionException(
+                            "Unsupported option '" + dependencyOption + "' for Paper dependency '" + dependencyName + "'."
+                        );
+                    }
+                }
+
                 boolean joinClasspath = readBoolean(dependency, "join-classpath", true, dependencyName);
                 if (!joinClasspath) {
                     throw new InvalidDescriptionException(
