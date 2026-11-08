@@ -220,6 +220,21 @@ public class PaperPluginDescriptorTest {
         PaperPluginDescriptor.read(jar);
     }
 
+    @Test(expected = InvalidDescriptionException.class)
+    public void rejectsUnknownServerDependencyOptions() throws Exception {
+        File jar = createJar("paper-plugin.yml",
+            "name: UnknownDependencyOptionPlugin\n" +
+            "version: '1.0'\n" +
+            "main: example.Plugin\n" +
+            "dependencies:\n" +
+            "  server:\n" +
+            "    CoreLib:\n" +
+            "      required: true\n" +
+            "      made-up-option: true\n"
+        );
+        PaperPluginDescriptor.read(jar);
+    }
+
     private static File createJar(String... entries) throws Exception {
         if (entries.length % 2 != 0) {
             throw new IllegalArgumentException("Entries must be name/content pairs");
