@@ -30,8 +30,9 @@ Cel: rozwijać Arclight dla Minecraft 1.20.1 tak, aby na jednym serwerze działa
 
 ## 2. Runtime Paper
 
-- [ ] Wybrać i przypiąć konkretny, historyczny zestaw źródeł Paper zgodny z Minecraft 1.20.1.
-- [ ] Przygotować powtarzalny proces pobierania źródeł i nakładania patchy Paper na istniejący kod Arclight/CraftBukkit.
+- [x] Wybrać i przypiąć historyczne źródła Paper zgodne z Minecraft 1.20.1: Paper build 196, commit `773dd724469bae89d0c2075edc3d1ddc8d5b0b18`.
+- [ ] Zweryfikować w CI skrypt odtwarzający źródła i nakładający patche Paper (`scripts/prepare-paper-upstream.sh`).
+- [ ] Przygotować proces portowania patchy Paper na kod Arclight/Forge; samo odtworzenie drzewa Paper nie jest integracją runtime.
 - [ ] Przenieść wymagane poprawki serwera Paper bez nadpisywania istniejących poprawek Arclight.
 - [ ] Zaimplementować brakujące klasy i zachowania Paper API wymagane w runtime — samo dołączenie pliku Paper API do JAR-a nie wystarcza.
 - [ ] Uzupełnić Paper-specific zachowania świata, chunków, encji, ticków i konfiguracji.
