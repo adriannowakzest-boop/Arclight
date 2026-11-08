@@ -130,11 +130,11 @@ public class PaperPluginDescriptorTest {
     @Test(expected = InvalidDescriptionException.class)
     public void rejectsMalformedServerDependencySection() throws Exception {
         File jar = createJar("paper-plugin.yml",
-            "name: MalformedPlugin\\n" +
-            "version: '1.0'\\n" +
-            "main: example.Plugin\\n" +
-            "dependencies:\\n" +
-            "  server: not-a-map\\n"
+            "name: MalformedPlugin\n" +
+            "version: '1.0'\n" +
+            "main: example.Plugin\n" +
+            "dependencies:\n" +
+            "  server: not-a-map\n"
         );
         PaperPluginDescriptor.read(jar);
     }
@@ -142,13 +142,13 @@ public class PaperPluginDescriptorTest {
     @Test(expected = InvalidDescriptionException.class)
     public void rejectsNonBooleanDependencyFlags() throws Exception {
         File jar = createJar("paper-plugin.yml",
-            "name: MalformedPlugin\\n" +
-            "version: '1.0'\\n" +
-            "main: example.Plugin\\n" +
-            "dependencies:\\n" +
-            "  server:\\n" +
-            "    CoreLib:\\n" +
-            "      required: 'yes'\\n"
+            "name: MalformedPlugin\n" +
+            "version: '1.0'\n" +
+            "main: example.Plugin\n" +
+            "dependencies:\n" +
+            "  server:\n" +
+            "    CoreLib:\n" +
+            "      required: 'yes'\n"
         );
         PaperPluginDescriptor.read(jar);
     }
@@ -156,12 +156,12 @@ public class PaperPluginDescriptorTest {
     @Test(expected = InvalidDescriptionException.class)
     public void rejectsUnknownDependencyScopes() throws Exception {
         File jar = createJar("paper-plugin.yml",
-            "name: UnknownScopePlugin\\n" +
-            "version: '1.0'\\n" +
-            "main: example.Plugin\\n" +
-            "dependencies:\\n" +
-            "  client:\\n" +
-            "    CoreLib: {}\\n"
+            "name: UnknownScopePlugin\n" +
+            "version: '1.0'\n" +
+            "main: example.Plugin\n" +
+            "dependencies:\n" +
+            "  client:\n" +
+            "    CoreLib: {}\n"
         );
         PaperPluginDescriptor.read(jar);
     }
