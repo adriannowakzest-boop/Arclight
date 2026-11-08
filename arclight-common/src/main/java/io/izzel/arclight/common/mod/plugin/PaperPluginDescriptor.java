@@ -78,17 +78,38 @@ public final class PaperPluginDescriptor {
             );
         }
 
-        ConfigurationSection bootstrapDependencies = paper.getConfigurationSection("dependencies.bootstrap");
-        if (bootstrapDependencies != null && !bootstrapDependencies.getKeys(false).isEmpty()) {
-            throw new InvalidDescriptionException(
-                "PaperBridge 1.20.1 does not implement Paper bootstrap dependencies."
-            );
+        ConfigurationSection dependencies = null;
+        if (paper.contains("dependencies")) {
+            Object value = paper.get("dependencies");
+            if (!(value instanceof ConfigurationSection)) {
+                throw new InvalidDescriptionException("'dependencies' must be a YAML section.");
+            }
+            dependencies = (ConfigurationSection) value;
+            for (String scope : dependencies.getKeys(false)) {
+                if (!"server".equals(scope) && !"bootstrap".equals(scope)) {
+                    throw new InvalidDescriptionException("Unsupported Paper dependency scope: " + scope);
+                }
+            }
+        }
+
+        if (dependencies != null && dependencies.contains("bootstrap")) {
+            ConfigurationSection bootstrapDependencies = dependencies.getConfigurationSection("bootstrap");
+            if (bootstrapDependencies == null) {
+                throw new InvalidDescriptionException("'dependencies.bootstrap' must be a YAML section.");
+            }
+            if (!bootstrapDependencies.getKeys(false).isEmpty()) {
+                throw new InvalidDescriptionException(
+                    "PaperBridge 1.20.1 does not implement Paper bootstrap dependencies."
+                );
+            }
         }
 
         String name = paper.getString("name");
         String version = paper.getString("version");
         String main = paper.getString("main");
-        if (name == null || version == null || main == null) {
+        if (name == null || name.trim().isEmpty() ||
+            version == null || version.trim().isEmpty() ||
+            main == null || main.trim().isEmpty()) {
             throw new InvalidDescriptionException(
                 "paper-plugin.yml must define non-empty name, version, and main fields."
             );
@@ -127,26 +148,38 @@ public final class PaperPluginDescriptor {
         List<String> required = new ArrayList<>();
         List<String> optional = new ArrayList<>();
         List<String> loadBefore = new ArrayList<>();
-        ConfigurationSection dependencies = paper.getConfigurationSection("dependencies.server");
-        if (dependencies != null) {
-            for (String dependencyName : dependencies.getKeys(false)) {
-                Object dependencyValue = dependencies.getValues(false).get(dependencyName);
-                if (!(dependencyValue instanceof ConfigurationSection)) {
+        ConfigurationSection serverDependencies = null;
+        if (dependencies != null && dependencies.contains("server")) {
+            serverDependencies = dependencies.getConfigurationSection("server");
+            if (serverDependencies == null) {
+                throw new InvalidDescriptionException("'dependencies.server' must be a YAML section.");
+            }
+        }
+        if (serverDependencies != null) {
+            for (String dependencyName : serverDependencies.getKeys(false)) {
+                ConfigurationSection dependency = serverDependencies.getConfigurationSection(dependencyName);
+                if (dependency == null) {
                     throw new InvalidDescriptionException(
-                        "Invalid server dependency entry for '" + dependencyName + "'."
+                        "Invalid server dependency entry for '" + dependencyName + "'. Expected a YAML section."
                     );
                 }
 
-                ConfigurationSection dependency = (ConfigurationSection) dependencyValue;
-                if (!dependency.getBoolean("join-classpath", true)) {
+                boolean joinClasspath = readBoolean(dependency, "join-classpath", true, dependencyName);
+                if (!joinClasspath) {
                     throw new InvalidDescriptionException(
                         "PaperBridge 1.20.1 uses Arclight's legacy plugin class loader and cannot enforce " +
                         "join-classpath: false for dependency '" + dependencyName + "'."
                     );
                 }
 
-                boolean isRequired = dependency.getBoolean("required", true);
-                String relativeOrder = dependency.getString("load", "OMIT").toUpperCase(Locale.ROOT);
+                boolean isRequired = readBoolean(dependency, "required", true, dependencyName);
+                Object loadValue = dependency.get("load");
+                if (loadValue != null && !(loadValue instanceof String)) {
+                    throw new InvalidDescriptionException(
+                        "Invalid load value for Paper dependency '" + dependencyName + "'. Expected BEFORE, AFTER, or OMIT."
+                    );
+                }
+                String relativeOrder = (loadValue == null ? "OMIT" : ((String) loadValue)).toUpperCase(Locale.ROOT);
                 if (!"OMIT".equals(relativeOrder) && !"BEFORE".equals(relativeOrder) && !"AFTER".equals(relativeOrder)) {
                     throw new InvalidDescriptionException(
                         "Unsupported load order '" + relativeOrder + "' for Paper dependency '" + dependencyName + "'."
@@ -182,6 +215,20 @@ public final class PaperPluginDescriptor {
         }
 
         return new PluginDescriptionFile(new StringReader(bukkit.saveToString()));
+    }
+
+    private static boolean readBoolean(ConfigurationSection section, String key, boolean defaultValue,
+                                        String dependencyName) throws InvalidDescriptionException {
+        Object value = section.get(key);
+        if (value == null) {
+            return defaultValue;
+        }
+        if (!(value instanceof Boolean)) {
+            throw new InvalidDescriptionException(
+                "Invalid '" + key + "' value for Paper dependency '" + dependencyName + "'. Expected true or false."
+            );
+        }
+        return (Boolean) value;
     }
 
     private static void copy(YamlConfiguration source, YamlConfiguration target, String key) {
