@@ -104,15 +104,26 @@ public final class PaperPluginDescriptor {
             }
         }
 
-        String name = paper.getString("name");
-        String version = paper.getString("version");
-        String main = paper.getString("main");
-        if (name == null || name.trim().isEmpty() ||
-            version == null || version.trim().isEmpty() ||
-            main == null || main.trim().isEmpty()) {
-            throw new InvalidDescriptionException(
-                "paper-plugin.yml must define non-empty name, version, and main fields."
-            );
+        String name = requiredString(paper, "name");
+        String version = requiredString(paper, "version");
+        String main = requiredString(paper, "main");
+        if (!main.matches("[\\\\p{javaJavaIdentifierStart}][\\\\p{javaJavaIdentifierPart}]*(\\\\.[\\\\p{javaJavaIdentifierStart}][\\\\p{javaJavaIdentifierPart}]*)*")) {
+            throw new InvalidDescriptionException("'main' must be a valid Java binary class name: " + main);
+        }
+        validateStringList(paper, "authors");
+        validateStringList(paper, "provides");
+        validateStringList(paper, "libraries");
+        if (paper.contains("author") && !(paper.get("author") instanceof String)) {
+            throw new InvalidDescriptionException("'author' must be a string.");
+        }
+        if (paper.contains("description") && !(paper.get("description") instanceof String)) {
+            throw new InvalidDescriptionException("'description' must be a string.");
+        }
+        if (paper.contains("website") && !(paper.get("website") instanceof String)) {
+            throw new InvalidDescriptionException("'website' must be a string.");
+        }
+        if (paper.contains("prefix") && !(paper.get("prefix") instanceof String)) {
+            throw new InvalidDescriptionException("'prefix' must be a string.");
         }
 
         YamlConfiguration bukkit = new YamlConfiguration();
@@ -129,6 +140,9 @@ public final class PaperPluginDescriptor {
         // Paper 1.20.1 PluginDescriptionFile and LibraryLoader support Maven GAV libraries.
         copy(paper, bukkit, "libraries");
 
+        if (paper.contains("api-version") && !(paper.get("api-version") instanceof String)) {
+            throw new InvalidDescriptionException("'api-version' must be a string.");
+        }
         String apiVersion = paper.getString("api-version");
         if (apiVersion != null) {
             // Bukkit's 1.20.1 API version is "1.20"; patch-level API versions
@@ -139,6 +153,9 @@ public final class PaperPluginDescriptor {
             bukkit.set("api-version", apiVersion);
         }
 
+        if (paper.contains("load") && !(paper.get("load") instanceof String)) {
+            throw new InvalidDescriptionException("'load' must be STARTUP or POSTWORLD.");
+        }
         String load = paper.getString("load", "POSTWORLD");
         if (!"STARTUP".equalsIgnoreCase(load) && !"POSTWORLD".equalsIgnoreCase(load)) {
             throw new InvalidDescriptionException("Unsupported Paper plugin load value: " + load);
@@ -215,6 +232,29 @@ public final class PaperPluginDescriptor {
         }
 
         return new PluginDescriptionFile(new StringReader(bukkit.saveToString()));
+    }
+
+    private static String requiredString(ConfigurationSection section, String key) throws InvalidDescriptionException {
+        Object value = section.get(key);
+        if (!(value instanceof String) || ((String) value).trim().isEmpty()) {
+            throw new InvalidDescriptionException("'"+ key + "' must be a non-empty string.");
+        }
+        return ((String) value).trim();
+    }
+
+    private static void validateStringList(ConfigurationSection section, String key) throws InvalidDescriptionException {
+        if (!section.contains(key)) {
+            return;
+        }
+        Object value = section.get(key);
+        if (!(value instanceof List)) {
+            throw new InvalidDescriptionException("'" + key + "' must be a list of strings.");
+        }
+        for (Object item : (List<?>) value) {
+            if (!(item instanceof String) || ((String) item).trim().isEmpty()) {
+                throw new InvalidDescriptionException("'" + key + "' must contain only non-empty strings.");
+            }
+        }
     }
 
     private static boolean readBoolean(ConfigurationSection section, String key, boolean defaultValue,
