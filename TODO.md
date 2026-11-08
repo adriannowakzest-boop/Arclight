@@ -52,6 +52,7 @@ Cel: rozwijać Arclight dla Minecraft 1.20.1 tak, aby na jednym serwerze działa
 - [x] Dodać eksperymentalny fallback `paper-plugin.yml` → `PluginDescriptionFile` dla prostych pluginów JavaPlugin.
 - [x] Mapować podstawowe `dependencies.server` na `depend`, `softdepend` i `loadbefore`.
 - [x] Odrzucać nieobsługiwane bootstrappery, custom loadery, `join-classpath: false` i konfliktowe zależności zamiast ignorować ich semantykę.
+- [x] Walidować strukturę `dependencies`, obsługiwane zakresy oraz typy pól `required`, `join-classpath` i `load`; odrzucać błędne deskryptory zamiast po cichu zmieniać ich znaczenie.
 - [ ] Potwierdzić testami i buildem, że fallback działa na Forge 47.4.28.
 - [ ] Sprawdzić bezpieczne wyłączanie pluginu podczas zatrzymania serwera.
 
