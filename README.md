@@ -47,3 +47,41 @@ YourKit supports open source projects with innovative and intelligent tools for 
 applications. YourKit is the creator of <a href="https://www.yourkit.com/java/profiler/">YourKit Java Profiler</a>,
 <a href="https://www.yourkit.com/.net/profiler/">YourKit .NET Profiler</a>,
 and <a href="https://www.yourkit.com/youmonitor/">YourKit YouMonitor</a>.
+## PaperBridge — experimental Minecraft 1.20.1 branch
+
+Development of the Forge + Bukkit/Paper hybrid is taking place on the [paperbridge-1.20.1](https://github.com/adriannowakzest-boop/Arclight/tree/paperbridge-1.20.1) branch.
+
+### Target versions
+
+- Minecraft: `1.20.1`
+- Forge: `47.4.28`
+- Java: `17`
+- SpongePowered Mixin: `0.8.5`
+- Paper API: `1.20.1-R0.1-SNAPSHOT`
+
+### Current compatibility status
+
+This branch is experimental. It builds on Arclight's existing Forge/Bukkit integration and includes an initial bridge for basic Paper plugin descriptors. It is **not yet a complete Paper server implementation**.
+
+- Bukkit/Spigot plugin support remains the compatibility baseline.
+- Basic `paper-plugin.yml` metadata can be adapted to the legacy Bukkit JavaPlugin loader.
+- Paper bootstrapper classes, custom plugin loaders, isolated Paper classpaths, and Paper-specific runtime/lifecycle APIs are not implemented by this adapter.
+- Paper API being available at compile time does not mean every Paper API method is implemented at runtime.
+- Paper-only plugins must be tested individually; general Paper plugin compatibility is not guaranteed.
+
+### Paper 1.20.1 source reference
+
+The branch pins the official Paper source revision `773dd724469bae89d0c2075edc3d1ddc8d5b0b18` (Paper 1.20.1 build 196). See [PAPER_UPSTREAM.md](https://github.com/adriannowakzest-boop/Arclight/blob/paperbridge-1.20.1/PAPER_UPSTREAM.md) for the source provenance and preparation instructions.
+
+### Build the experimental branch
+
+```bash
+git clone https://github.com/adriannowakzest-boop/Arclight.git
+cd Arclight
+git checkout paperbridge-1.20.1
+./gradlew cleanBuild remapSpigotJar idea --no-daemon
+./gradlew :arclight-common:test --no-daemon
+./gradlew build collect --no-daemon
+```
+
+Do not use this branch as a production server until its CI build, startup, plugin compatibility, and Forge integration tests have passed.
