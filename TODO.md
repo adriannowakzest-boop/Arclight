@@ -56,6 +56,7 @@ Cel: rozwijać Arclight dla Minecraft 1.20.1 tak, aby na jednym serwerze działa
 - [x] Odrzucać nieobsługiwane bootstrappery, custom loadery, `join-classpath: false` i konfliktowe zależności zamiast ignorować ich semantykę.
 - [x] Walidować strukturę `dependencies`, obsługiwane zakresy oraz typy pól `required`, `join-classpath` i `load`; odrzucać błędne deskryptory zamiast po cichu zmieniać ich znaczenie.
 - [x] Walidować typy podstawowych metadanych, nazwę klasy `main`, fazę ładowania oraz listy `authors`, `provides`, `libraries`; odrzucać nieznane opcje zależności serwera.
+- [x] Dodawać ścieżkę JAR-a do błędów odczytu deskryptora oraz nazwę JAR-a do błędów ładowania klas pluginu.
 - [ ] Potwierdzić testami i buildem, że fallback działa na Forge 47.4.28.
 - [ ] Sprawdzić bezpieczne wyłączanie pluginu podczas zatrzymania serwera.
 
