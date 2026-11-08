@@ -65,6 +65,10 @@ The `paperbridge-1.20.1` branch is an experimental Forge hybrid based on Arcligh
 
 **Compatibility status:** this does not yet implement the full Paper server internals or the separate `paper-plugin.yml` loader. Plugins that only use Bukkit/Spigot APIs remain the baseline; Paper-only methods and features must be implemented and tested before a plugin can be called compatible.
 
+### Pinned Paper source reference
+
+Paper 1.20.1 source is pinned to official upstream commit `773dd724469bae89d0c2075edc3d1ddc8d5b0b18` (build 196). See [PAPER_UPSTREAM.md](PAPER_UPSTREAM.md) for provenance and the reproducible source preparation script. This reconstructs the upstream reference tree; it does not mean Paper's server patches have already been ported into Forge.
+
 ### Build
 
 ```bash
