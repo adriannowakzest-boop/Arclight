@@ -169,9 +169,9 @@ public class PaperPluginDescriptorTest {
     @Test(expected = InvalidDescriptionException.class)
     public void rejectsNonStringRequiredFields() throws Exception {
         File jar = createJar("paper-plugin.yml",
-            "name: 123\\n" +
-            "version: '1.0'\\n" +
-            "main: example.Plugin\\n"
+            "name: 123\n" +
+            "version: '1.0'\n" +
+            "main: example.Plugin\n"
         );
         PaperPluginDescriptor.read(jar);
     }
@@ -179,9 +179,9 @@ public class PaperPluginDescriptorTest {
     @Test(expected = InvalidDescriptionException.class)
     public void rejectsInvalidJavaMainClassName() throws Exception {
         File jar = createJar("paper-plugin.yml",
-            "name: InvalidMainPlugin\\n" +
-            "version: '1.0'\\n" +
-            "main: example.not-valid\\n"
+            "name: InvalidMainPlugin\n" +
+            "version: '1.0'\n" +
+            "main: example.not-valid\n"
         );
         PaperPluginDescriptor.read(jar);
     }
@@ -189,10 +189,10 @@ public class PaperPluginDescriptorTest {
     @Test(expected = InvalidDescriptionException.class)
     public void rejectsNonStringApiVersion() throws Exception {
         File jar = createJar("paper-plugin.yml",
-            "name: InvalidApiPlugin\\n" +
-            "version: '1.0'\\n" +
-            "main: example.Plugin\\n" +
-            "api-version: 120\\n"
+            "name: InvalidApiPlugin\n" +
+            "version: '1.0'\n" +
+            "main: example.Plugin\n" +
+            "api-version: 120\n"
         );
         PaperPluginDescriptor.read(jar);
     }
@@ -200,10 +200,10 @@ public class PaperPluginDescriptorTest {
     @Test(expected = InvalidDescriptionException.class)
     public void rejectsInvalidLoadPhase() throws Exception {
         File jar = createJar("paper-plugin.yml",
-            "name: InvalidLoadPlugin\\n" +
-            "version: '1.0'\\n" +
-            "main: example.Plugin\\n" +
-            "load: LATE\\n"
+            "name: InvalidLoadPlugin\n" +
+            "version: '1.0'\n" +
+            "main: example.Plugin\n" +
+            "load: LATE\n"
         );
         PaperPluginDescriptor.read(jar);
     }
@@ -211,11 +211,11 @@ public class PaperPluginDescriptorTest {
     @Test(expected = InvalidDescriptionException.class)
     public void rejectsNonStringLibraryEntries() throws Exception {
         File jar = createJar("paper-plugin.yml",
-            "name: InvalidLibraryPlugin\\n" +
-            "version: '1.0'\\n" +
-            "main: example.Plugin\\n" +
-            "libraries:\\n" +
-            "  - 123\\n"
+            "name: InvalidLibraryPlugin\n" +
+            "version: '1.0'\n" +
+            "main: example.Plugin\n" +
+            "libraries:\n" +
+            "  - 123\n"
         );
         PaperPluginDescriptor.read(jar);
     }
