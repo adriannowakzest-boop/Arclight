@@ -151,7 +151,7 @@ public abstract class PluginClassLoaderMixin extends URLClassLoader implements R
             }
         }
 
-        throw new ClassNotFoundException(String.format("Plugin %s cannot load class %s", description.getName(), name));
+        throw new ClassNotFoundException(String.format("Plugin %s (jar: %s) cannot load class %s", description.getName(), url, name));
     }
 
     /**
