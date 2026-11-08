@@ -166,6 +166,60 @@ public class PaperPluginDescriptorTest {
         PaperPluginDescriptor.read(jar);
     }
 
+    @Test(expected = InvalidDescriptionException.class)
+    public void rejectsNonStringRequiredFields() throws Exception {
+        File jar = createJar("paper-plugin.yml",
+            "name: 123\\n" +
+            "version: '1.0'\\n" +
+            "main: example.Plugin\\n"
+        );
+        PaperPluginDescriptor.read(jar);
+    }
+
+    @Test(expected = InvalidDescriptionException.class)
+    public void rejectsInvalidJavaMainClassName() throws Exception {
+        File jar = createJar("paper-plugin.yml",
+            "name: InvalidMainPlugin\\n" +
+            "version: '1.0'\\n" +
+            "main: example.not-valid\\n"
+        );
+        PaperPluginDescriptor.read(jar);
+    }
+
+    @Test(expected = InvalidDescriptionException.class)
+    public void rejectsNonStringApiVersion() throws Exception {
+        File jar = createJar("paper-plugin.yml",
+            "name: InvalidApiPlugin\\n" +
+            "version: '1.0'\\n" +
+            "main: example.Plugin\\n" +
+            "api-version: 120\\n"
+        );
+        PaperPluginDescriptor.read(jar);
+    }
+
+    @Test(expected = InvalidDescriptionException.class)
+    public void rejectsInvalidLoadPhase() throws Exception {
+        File jar = createJar("paper-plugin.yml",
+            "name: InvalidLoadPlugin\\n" +
+            "version: '1.0'\\n" +
+            "main: example.Plugin\\n" +
+            "load: LATE\\n"
+        );
+        PaperPluginDescriptor.read(jar);
+    }
+
+    @Test(expected = InvalidDescriptionException.class)
+    public void rejectsNonStringLibraryEntries() throws Exception {
+        File jar = createJar("paper-plugin.yml",
+            "name: InvalidLibraryPlugin\\n" +
+            "version: '1.0'\\n" +
+            "main: example.Plugin\\n" +
+            "libraries:\\n" +
+            "  - 123\\n"
+        );
+        PaperPluginDescriptor.read(jar);
+    }
+
     private static File createJar(String... entries) throws Exception {
         if (entries.length % 2 != 0) {
             throw new IllegalArgumentException("Entries must be name/content pairs");
