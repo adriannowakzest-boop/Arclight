@@ -2,7 +2,7 @@
 set -euo pipefail
 
 # Last Paper 1.20.1 source revision (Paper build 196).
-readonly PAPER_REPOSITORY="https://github.com/PaperMC/Paper.git"
+readonly PAPER_REPOSITORY="https://github.com/PaperMC/Paper-archive.git"
 readonly PAPER_COMMIT="773dd724469bae89d0c2075edc3d1ddc8d5b0b18"
 readonly PAPER_DIR="${PAPER_UPSTREAM_DIR:-build/paper-upstream-1.20.1}"
 
