@@ -73,8 +73,8 @@ public abstract class JavaPluginLoaderMixin implements JavaPluginLoaderBridge {
         } catch (InvalidDescriptionException exception) {
             String pluginPath = file == null ? "<unknown>" : file.getAbsolutePath();
             throw new InvalidDescriptionException(
-                "Cannot load plugin descriptor from '" + pluginPath + "': " + exception.getMessage(),
-                exception
+                exception,
+                "Cannot load plugin descriptor from '" + pluginPath + "': " + exception.getMessage()
             );
         }
         if (description != null) {
