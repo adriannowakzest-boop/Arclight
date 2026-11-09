@@ -39,6 +39,9 @@ fi
 echo "Preparing Paper 1.20.1 source at $actual_commit"
 (
   cd "$PAPER_DIR"
+  # Paperweight may create commits while applying patch sets in CI.
+  git config user.name "PaperBridge CI"
+  git config user.email "paperbridge-ci@users.noreply.github.com"
   chmod +x ./gradlew
   ./gradlew applyPatches --no-daemon --stacktrace
 )
