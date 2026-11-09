@@ -260,7 +260,7 @@ public class PaperPluginDescriptorTest {
         }
         File jar = Files.createTempFile("paperbridge-plugin-", ".jar").toFile();
         jar.deleteOnExit();
-        try (JarOutputStream output = new JarOutputStream(Files.newOutputStream(jar))) {
+        try (JarOutputStream output = new JarOutputStream(Files.newOutputStream(jar.toPath()))) {
             for (int i = 0; i < entries.length; i += 2) {
                 output.putNextEntry(new JarEntry(entries[i]));
                 output.write(entries[i + 1].getBytes(StandardCharsets.UTF_8));
