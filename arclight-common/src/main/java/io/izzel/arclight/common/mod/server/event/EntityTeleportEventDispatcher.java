@@ -19,26 +19,36 @@ public class EntityTeleportEventDispatcher {
             CraftPlayer player = ((ServerPlayerEntityBridge) event.getEntity()).bridge$getBukkitEntity();
             PlayerTeleportEvent bukkitEvent = new PlayerTeleportEvent(player, player.getLocation(), new Location(player.getWorld(), event.getTargetX(), event.getTargetY(), event.getTargetZ()), PlayerTeleportEvent.TeleportCause.ENDER_PEARL);
             Bukkit.getPluginManager().callEvent(bukkitEvent);
-            if (bukkitEvent.getTo() == null) {
+            Location destination = bukkitEvent.getTo();
+            if (!isValidDestination(destination, player.getWorld())) {
                 event.setCanceled(true);
                 return;
             }
             event.setCanceled(event.isCanceled() || bukkitEvent.isCancelled());
-            event.setTargetX(bukkitEvent.getTo().getX());
-            event.setTargetY(bukkitEvent.getTo().getY());
-            event.setTargetZ(bukkitEvent.getTo().getZ());
+            event.setTargetX(destination.getX());
+            event.setTargetY(destination.getY());
+            event.setTargetZ(destination.getZ());
         } else {
             CraftEntity entity = ((EntityBridge) event.getEntity()).bridge$getBukkitEntity();
             EntityTeleportEvent bukkitEvent = new EntityTeleportEvent(entity, entity.getLocation(), new Location(entity.getWorld(), event.getTargetX(), event.getTargetY(), event.getTargetZ()));
             Bukkit.getPluginManager().callEvent(bukkitEvent);
-            if (bukkitEvent.getTo() == null) {
+            Location destination = bukkitEvent.getTo();
+            if (!isValidDestination(destination, entity.getWorld())) {
                 event.setCanceled(true);
                 return;
             }
             event.setCanceled(event.isCanceled() || bukkitEvent.isCancelled());
-            event.setTargetX(bukkitEvent.getTo().getX());
-            event.setTargetY(bukkitEvent.getTo().getY());
-            event.setTargetZ(bukkitEvent.getTo().getZ());
+            event.setTargetX(destination.getX());
+            event.setTargetY(destination.getY());
+            event.setTargetZ(destination.getZ());
         }
+    }
+
+    private static boolean isValidDestination(Location destination, org.bukkit.World currentWorld) {
+        return destination != null
+            && destination.getWorld() == currentWorld
+            && Double.isFinite(destination.getX())
+            && Double.isFinite(destination.getY())
+            && Double.isFinite(destination.getZ());
     }
 }
