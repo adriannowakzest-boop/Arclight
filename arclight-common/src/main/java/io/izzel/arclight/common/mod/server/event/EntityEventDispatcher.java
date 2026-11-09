@@ -4,13 +4,12 @@ import io.izzel.arclight.common.mod.util.ArclightCaptures;
 import io.izzel.tools.collection.XmapList;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.item.ItemEntity;
-import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.event.entity.EntityStruckByLightningEvent;
 import net.minecraftforge.event.entity.living.AnimalTameEvent;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
+import net.minecraftforge.event.entity.living.MobSpawnEvent;
+import net.minecraft.world.entity.MobSpawnType;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import org.bukkit.craftbukkit.v.event.CraftEventFactory;
@@ -27,14 +26,32 @@ public class EntityEventDispatcher {
 
 
     @SubscribeEvent(receiveCanceled = true)
-    public void onEntityJoinLevel(EntityJoinLevelEvent event) {
-        if (!(event.getLevel() instanceof ServerLevel) || !(event.getEntity() instanceof Mob mob) || Bukkit.getServer() == null) {
+    public void onMobFinalizeSpawn(MobSpawnEvent.FinalizeSpawn event) {
+        if (Bukkit.getServer() == null) {
             return;
         }
         CreatureSpawnEvent spawnEvent = CraftEventFactory.callCreatureSpawnEvent(
-            mob, CreatureSpawnEvent.SpawnReason.DEFAULT
+            event.getEntity(), toBukkitSpawnReason(event.getSpawnType())
         );
-        event.setCanceled(event.isCanceled() || spawnEvent.isCancelled());
+        if (spawnEvent.isCancelled()) {
+            event.setSpawnCancelled(true);
+        }
+    }
+
+    private static CreatureSpawnEvent.SpawnReason toBukkitSpawnReason(MobSpawnType spawnType) {
+        String reason = switch (spawnType.name()) {
+            case "CHUNK_GENERATION" -> "CHUNK_GEN";
+            case "SPAWN_EGG" -> "SPAWNER_EGG";
+            case "DISPENSER" -> "DISPENSE_EGG";
+            case "REINFORCEMENT" -> "REINFORCEMENTS";
+            case "MOB_SUMMONED", "COMMAND", "TRIGGERED" -> "CUSTOM";
+            default -> spawnType.name();
+        };
+        try {
+            return CreatureSpawnEvent.SpawnReason.valueOf(reason);
+        } catch (IllegalArgumentException ignored) {
+            return CreatureSpawnEvent.SpawnReason.DEFAULT;
+        }
     }
 
     @SubscribeEvent(receiveCanceled = true)
