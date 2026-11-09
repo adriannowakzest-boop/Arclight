@@ -24,4 +24,15 @@ public class ForgeEventFactoryMixin {
     private static void arclight$captureDirection(Entity entity, List<BlockSnapshot> blockSnapshots, Direction direction, CallbackInfoReturnable<Boolean> cir) {
         ArclightCaptures.capturePlaceEventDirection(direction);
     }
+
+    // Clear stale context if Forge does not post the corresponding placement event.
+    @Inject(method = "onBlockPlace", remap = false, at = @At("RETURN"))
+    private static void arclight$clearBlockPlaceDirection(Entity entity, BlockSnapshot blockSnapshot, Direction direction, CallbackInfoReturnable<Boolean> cir) {
+        ArclightCaptures.getPlaceEventDirection();
+    }
+
+    @Inject(method = "onMultiBlockPlace", remap = false, at = @At("RETURN"))
+    private static void arclight$clearMultiBlockPlaceDirection(Entity entity, List<BlockSnapshot> blockSnapshots, Direction direction, CallbackInfoReturnable<Boolean> cir) {
+        ArclightCaptures.getPlaceEventDirection();
+    }
 }
