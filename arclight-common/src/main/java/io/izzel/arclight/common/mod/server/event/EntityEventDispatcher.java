@@ -30,7 +30,8 @@ public class EntityEventDispatcher {
 
     @SubscribeEvent(receiveCanceled = true)
     public void onItemJoinLevel(EntityJoinLevelEvent event) {
-        if (!(event.getLevel() instanceof net.minecraft.server.level.ServerLevel) ||
+        // Entities restored from chunk/entity storage are not new item drops.
+        if (event.loadedFromDisk() || !(event.getLevel() instanceof net.minecraft.server.level.ServerLevel) ||
             !(event.getEntity() instanceof ItemEntity itemEntity) || Bukkit.getServer() == null) {
             return;
         }
