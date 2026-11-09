@@ -63,9 +63,10 @@ dependencies {
     implementation 'org.jetbrains:annotations:23.0.0'
 
     implementation "org.spongepowered:mixin:$mixinVersion"
-    annotationProcessor "org.spongepowered:mixin:$mixinVersion:processor"
-    // Mixin annotation processing needs Forge ModLauncher on its isolated classpath.
-    annotationProcessor "cpw.mods:modlauncher:10.0.9"
+    // Keep the Mixin AP at the version used by upstream Arclight Trials.
+    // Runtime Mixin remains at mixinVersion (0.8.5); the newer AP attempts to
+    // initialise a ModLauncher host service inside javac, where no launcher exists.
+    annotationProcessor "org.spongepowered:mixin:0.8.3:processor"
 
     implementation 'com.github.ArclightTeam:mixin-tools:1.0.0'
     annotationProcessor 'com.github.ArclightTeam:mixin-tools:1.0.0'
