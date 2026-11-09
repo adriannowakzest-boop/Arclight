@@ -35,20 +35,20 @@ public final class ArclightPermissionHandler implements IPermissionHandler {
     @SuppressWarnings("unchecked")
     @Override
     public <T> T getPermission(ServerPlayer player, PermissionNode<T> node, PermissionDynamicContext<?>... context) {
-        if (node.getType() == PermissionTypes.BOOLEAN) {
+        if (node.getType() == PermissionTypes.BOOLEAN
+            && Bukkit.getPluginManager().getPermission(node.getNodeName()) != null) {
             return (T) (Object) ((ServerPlayerEntityBridge) player).bridge$getBukkitEntity().hasPermission(node.getNodeName());
-        } else {
-            return delegate.getPermission(player, node, context);
         }
+        return delegate.getPermission(player, node, context);
     }
 
     @Override
     public <T> T getOfflinePermission(UUID uuid, PermissionNode<T> node, PermissionDynamicContext<?>... context) {
         var player = Bukkit.getPlayer(uuid);
-        if (player != null && node.getType() == PermissionTypes.BOOLEAN) {
+        if (player != null && node.getType() == PermissionTypes.BOOLEAN
+            && Bukkit.getPluginManager().getPermission(node.getNodeName()) != null) {
             return (T) (Object) player.hasPermission(node.getNodeName());
-        } else {
-            return delegate.getOfflinePermission(uuid, node, context);
         }
+        return delegate.getOfflinePermission(uuid, node, context);
     }
 }
