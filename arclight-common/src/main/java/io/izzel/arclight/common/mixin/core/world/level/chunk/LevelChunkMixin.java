@@ -156,6 +156,9 @@ public abstract class LevelChunkMixin extends ChunkAccessMixin implements ChunkB
 
     public void unloadCallback() {
         org.bukkit.Server server = Bukkit.getServer();
+        if (server == null) {
+            return;
+        }
         var bukkitChunk = new CraftChunk((LevelChunk) (Object) this);
         org.bukkit.event.world.ChunkUnloadEvent unloadEvent = new org.bukkit.event.world.ChunkUnloadEvent(bukkitChunk, this.isUnsaved());
         server.getPluginManager().callEvent(unloadEvent);
