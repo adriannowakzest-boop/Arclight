@@ -136,6 +136,7 @@ public final class PaperPluginDescriptor {
         copy(paper, bukkit, "author");
         copy(paper, bukkit, "prefix");
         copy(paper, bukkit, "permissions");
+        copy(paper, bukkit, "commands");
         copy(paper, bukkit, "provides");
         // Paper 1.20.1 PluginDescriptionFile and LibraryLoader support Maven GAV libraries.
         copy(paper, bukkit, "libraries");
