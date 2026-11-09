@@ -23,7 +23,7 @@ public class EntityTeleportEventDispatcher {
                 event.setCanceled(true);
                 return;
             }
-            event.setCanceled(bukkitEvent.isCancelled());
+            event.setCanceled(event.isCanceled() || bukkitEvent.isCancelled());
             event.setTargetX(bukkitEvent.getTo().getX());
             event.setTargetY(bukkitEvent.getTo().getY());
             event.setTargetZ(bukkitEvent.getTo().getZ());
@@ -35,7 +35,7 @@ public class EntityTeleportEventDispatcher {
                 event.setCanceled(true);
                 return;
             }
-            event.setCanceled(bukkitEvent.isCancelled());
+            event.setCanceled(event.isCanceled() || bukkitEvent.isCancelled());
             event.setTargetX(bukkitEvent.getTo().getX());
             event.setTargetY(bukkitEvent.getTo().getY());
             event.setTargetZ(bukkitEvent.getTo().getZ());
