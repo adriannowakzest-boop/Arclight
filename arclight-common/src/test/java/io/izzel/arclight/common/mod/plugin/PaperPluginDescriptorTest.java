@@ -57,6 +57,25 @@ public class PaperPluginDescriptorTest {
     }
 
     @Test
+    public void preservesCommandDeclarations() throws Exception {
+        File jar = createJar("paper-plugin.yml",
+            "name: CommandPlugin\\n" +
+            "version: '1.0'\\n" +
+            "main: example.Plugin\\n" +
+            "commands:\\n" +
+            "  sample:\\n" +
+            "    description: Sample command\\n" +
+            "    usage: /sample\\n" +
+            "    aliases: [samp]\\n"
+        );
+
+        PluginDescriptionFile description = PaperPluginDescriptor.read(jar);
+        assertNotNull(description);
+        assertTrue(description.getCommands().containsKey("sample"));
+        assertTrue(description.getCommands().get("sample").containsKey("aliases"));
+    }
+
+    @Test
     public void prefersPluginYmlWhenBothDescriptorsExist() throws Exception {
         File jar = createJar(
             "plugin.yml", "name: LegacyPlugin\nversion: '2.0'\nmain: example.LegacyPlugin\n",
