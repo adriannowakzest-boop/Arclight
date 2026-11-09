@@ -52,6 +52,7 @@ Cel: rozwijać Arclight dla Minecraft 1.20.1 tak, aby na jednym serwerze działa
 - [x] Przekazywać `libraries` z `paper-plugin.yml` do Paper `PluginDescriptionFile` i istniejącego `LibraryLoader` (Maven GAV).
 - [ ] Zaimplementować natywny Paper loader i zależności między pluginami.
 - [x] Dodać eksperymentalny fallback `paper-plugin.yml` → `PluginDescriptionFile` dla prostych pluginów JavaPlugin.
+- [x] Zachowywać deklaracje komend (`commands`) z `paper-plugin.yml` w deskryptorze Bukkit, aby legacy loader rejestrował je tak jak w `plugin.yml`.
 - [x] Mapować podstawowe `dependencies.server` na `depend`, `softdepend` i `loadbefore`.
 - [x] Odrzucać nieobsługiwane bootstrappery, custom loadery, `join-classpath: false` i konfliktowe zależności zamiast ignorować ich semantykę.
 - [x] Walidować strukturę `dependencies`, obsługiwane zakresy oraz typy pól `required`, `join-classpath` i `load`; odrzucać błędne deskryptory zamiast po cichu zmieniać ich znaczenie.
