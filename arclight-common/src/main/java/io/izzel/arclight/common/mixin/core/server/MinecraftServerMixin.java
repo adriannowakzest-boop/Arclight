@@ -66,6 +66,7 @@ import org.bukkit.craftbukkit.v.scoreboard.CraftScoreboardManager;
 import org.bukkit.event.server.ServerLoadEvent;
 import org.bukkit.event.world.WorldInitEvent;
 import org.bukkit.event.world.WorldLoadEvent;
+import org.bukkit.event.world.WorldUnloadEvent;
 import org.bukkit.plugin.PluginLoadOrder;
 import org.slf4j.Logger;
 import org.spigotmc.WatchdogThread;
@@ -483,6 +484,22 @@ public abstract class MinecraftServerMixin extends ReentrantBlockableEventLoop<T
     public void addLevel(ServerLevel level) {
         this.levels.put(level.dimension(), level);
         this.markWorldsDirty();
+    }
+
+    @Inject(method = "removeLevel", at = @At("HEAD"), cancellable = true)
+    private void arclight$fireWorldUnloadEvent(ServerLevel level, CallbackInfo ci) {
+        if (Bukkit.getServer() == null) {
+            return;
+        }
+        org.bukkit.World world = ((WorldBridge) level).bridge$getWorld();
+        if (world == null) {
+            return;
+        }
+        WorldUnloadEvent event = new WorldUnloadEvent(world);
+        Bukkit.getPluginManager().callEvent(event);
+        if (event.isCancelled()) {
+            ci.cancel();
+        }
     }
 
     public void removeLevel(ServerLevel level) {
