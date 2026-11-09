@@ -75,7 +75,8 @@ Istniejące mosty Forge → Bukkit w kodzie obejmują event bus, obsługę zdarz
 - [x] Odrzucać nieprawidłowe cele teleportacji (inny świat, null lub współrzędne NaN/Infinity).
 - [x] Zachowywać wcześniejsze anulowanie Forge podczas przekazywania teleportacji, despawnu przedmiotów i usuwania efektów mikstur do Bukkit.
 - [x] Zachowywać wcześniejsze anulowanie Forge w zdarzeniach niszczenia i stawiania bloków po wywołaniu listenerów Bukkit.
-- [x] Przekazywać do Bukkit `CreatureSpawnEvent` spawnowanie mobów zgłaszane przez Forge; zachowywać wcześniejsze anulowanie Forge.
+- [x] Przekazywać Forge `MobSpawnEvent.FinalizeSpawn` do Bukkit `CreatureSpawnEvent` z mapowaniem przyczyny spawnu i obsługą anulowania przed finalizacją moba.
+- [ ] Zweryfikować mapowanie wszystkich `MobSpawnType` oraz zachowanie spawnów niestandardowych modów.
 - [x] Wywoływać Bukkit `WorldUnloadEvent` przed usunięciem świata przez Forge; respektować anulowanie unloadu.
 - [ ] Zmapować i zweryfikować cykl życia serwera, świata, gracza, encji i chunków pomiędzy Forge oraz Bukkit/Paper.
 - [x] Zabezpieczyć callbacki unload chunków i światów, gdy Bukkit Server nie jest już dostępny podczas zamykania.
