@@ -67,6 +67,7 @@ Istniejące mosty Forge → Bukkit w kodzie obejmują event bus, obsługę zdarz
 
 - [x] Zarejestrować dispatchery Forge dla zdarzeń niszczenia/stawiania bloków, deptania grządek, śmierci i oswajania encji, teleportacji, efektów mikstur, despawnu przedmiotów i usuwania światów.
 - [x] Dodać most Forge Permission API → Bukkit permissions (konfigurowalny).
+- [x] Zachować domyślny handler Forge dla węzłów, które nie są zarejestrowane jako uprawnienia Bukkit.
 - [x] Uwzględnić kanały plugin messaging Bukkit w rejestracji kanałów Forge.
 - [x] Zabezpieczyć dystrybucję pakietów Forge do graczy przed wysyłką przez niegotowe połączenie.
 - [x] Czyścić przechwycony kierunek stawiania bloku, gdy Forge nie opublikuje zdarzenia placement.
