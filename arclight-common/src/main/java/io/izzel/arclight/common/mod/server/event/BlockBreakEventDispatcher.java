@@ -28,7 +28,7 @@ public class BlockBreakEventDispatcher {
             breakEvent.setCancelled(event.isCanceled());
             breakEvent.setExpToDrop(event.getExpToDrop());
             Bukkit.getPluginManager().callEvent(breakEvent);
-            event.setCanceled(breakEvent.isCancelled());
+            event.setCanceled(event.isCanceled() || breakEvent.isCancelled());
             event.setExpToDrop(breakEvent.getExpToDrop());
         }
     }
