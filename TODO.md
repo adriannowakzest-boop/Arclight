@@ -63,8 +63,16 @@ Cel: rozwijać Arclight dla Minecraft 1.20.1 tak, aby na jednym serwerze działa
 
 ## 4. Integracja Forge
 
-- [ ] Zmapować cykl życia serwera, świata, gracza, encji i chunków pomiędzy Forge oraz Bukkit/Paper.
-- [ ] Ustalić jednoznaczną kolejność wywołań eventów Forge i Bukkit/Paper.
+Istniejące mosty Forge → Bukkit w kodzie obejmują event bus, obsługę zdarzeń bloków, encji i świata, kanały sieciowe, dystrybucję pakietów oraz przekazywanie uprawnień. Ich obecność nie zastępuje testów runtime z modami.
+
+- [x] Zarejestrować dispatchery Forge dla zdarzeń niszczenia/stawiania bloków, deptania grządek, śmierci i oswajania encji, teleportacji, efektów mikstur, despawnu przedmiotów i usuwania światów.
+- [x] Dodać most Forge Permission API → Bukkit permissions (konfigurowalny).
+- [x] Uwzględnić kanały plugin messaging Bukkit w rejestracji kanałów Forge.
+- [x] Zabezpieczyć dystrybucję pakietów Forge do graczy przed wysyłką przez niegotowe połączenie.
+- [x] Czyścić przechwycony kierunek stawiania bloku, gdy Forge nie opublikuje zdarzenia placement.
+- [x] Anulować teleportację Forge, gdy plugin ustawi docelową lokalizację Bukkit na null.
+- [ ] Zmapować i zweryfikować cykl życia serwera, świata, gracza, encji i chunków pomiędzy Forge oraz Bukkit/Paper.
+- [ ] Ustalić i przetestować jednoznaczną kolejność wywołań eventów Forge i Bukkit/Paper.
 - [ ] Przetestować bloki, przedmioty, encje i wymiary dodane przez mody.
 - [ ] Przetestować capability Forge oraz dostęp pluginów do obiektów modowanych.
 - [ ] Zweryfikować zachowanie ekwipunków, interakcji, obrażeń, spawnu, śmierci i teleportacji.
