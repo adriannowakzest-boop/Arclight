@@ -17,11 +17,14 @@ if [[ -e "$PAPER_DIR/.git" ]]; then
     echo "Refusing to reuse $PAPER_DIR: origin is $actual_origin, expected $PAPER_REPOSITORY." >&2
     exit 1
   fi
-  git -C "$PAPER_DIR" fetch --no-tags origin "$PAPER_COMMIT"
 else
-  mkdir -p "$(dirname "$PAPER_DIR")"
-  git clone "$PAPER_REPOSITORY" "$PAPER_DIR"
+  mkdir -p "$PAPER_DIR"
+  git -C "$PAPER_DIR" init
+  git -C "$PAPER_DIR" remote add origin "$PAPER_REPOSITORY"
 fi
+
+# Fetch only the pinned revision instead of cloning the archive's full history.
+git -C "$PAPER_DIR" fetch --depth=1 --no-tags origin "$PAPER_COMMIT"
 
 git -C "$PAPER_DIR" checkout --detach "$PAPER_COMMIT"
 git -C "$PAPER_DIR" submodule sync --recursive
