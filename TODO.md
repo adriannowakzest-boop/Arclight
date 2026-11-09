@@ -74,6 +74,7 @@ Istniejące mosty Forge → Bukkit w kodzie obejmują event bus, obsługę zdarz
 - [x] Odrzucać nieprawidłowe cele teleportacji (inny świat, null lub współrzędne NaN/Infinity).
 - [x] Zachowywać wcześniejsze anulowanie Forge podczas przekazywania teleportacji, despawnu przedmiotów i usuwania efektów mikstur do Bukkit.
 - [ ] Zmapować i zweryfikować cykl życia serwera, świata, gracza, encji i chunków pomiędzy Forge oraz Bukkit/Paper.
+- [x] Zabezpieczyć callbacki unload chunków i światów, gdy Bukkit Server nie jest już dostępny podczas zamykania.
 - [ ] Ustalić i przetestować jednoznaczną kolejność wywołań eventów Forge i Bukkit/Paper.
 - [ ] Przetestować bloki, przedmioty, encje i wymiary dodane przez mody.
 - [ ] Przetestować capability Forge oraz dostęp pluginów do obiektów modowanych.
