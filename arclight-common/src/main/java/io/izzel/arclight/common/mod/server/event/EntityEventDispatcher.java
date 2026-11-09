@@ -6,6 +6,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraftforge.event.entity.EntityStruckByLightningEvent;
+import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.event.entity.living.AnimalTameEvent;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
 import net.minecraftforge.event.entity.living.MobSpawnEvent;
@@ -16,6 +17,8 @@ import org.bukkit.craftbukkit.v.event.CraftEventFactory;
 import org.bukkit.Bukkit;
 import org.bukkit.craftbukkit.v.inventory.CraftItemStack;
 import org.bukkit.event.entity.CreatureSpawnEvent;
+import org.bukkit.event.entity.ItemSpawnEvent;
+import org.bukkit.entity.Item;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
@@ -24,6 +27,17 @@ import java.util.List;
 
 public class EntityEventDispatcher {
 
+
+    @SubscribeEvent(receiveCanceled = true)
+    public void onItemJoinLevel(EntityJoinLevelEvent event) {
+        if (!(event.getLevel() instanceof net.minecraft.server.level.ServerLevel) ||
+            !(event.getEntity() instanceof ItemEntity itemEntity) || Bukkit.getServer() == null) {
+            return;
+        }
+        ItemSpawnEvent spawnEvent = new ItemSpawnEvent((Item) ((io.izzel.arclight.common.bridge.core.entity.EntityBridge) itemEntity).bridge$getBukkitEntity());
+        Bukkit.getPluginManager().callEvent(spawnEvent);
+        event.setCanceled(event.isCanceled() || spawnEvent.isCancelled());
+    }
 
     @SubscribeEvent(receiveCanceled = true)
     public void onMobFinalizeSpawn(MobSpawnEvent.FinalizeSpawn event) {
