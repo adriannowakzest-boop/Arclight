@@ -64,6 +64,8 @@ dependencies {
 
     implementation "org.spongepowered:mixin:$mixinVersion"
     annotationProcessor "org.spongepowered:mixin:$mixinVersion:processor"
+    // Mixin annotation processing needs Forge ModLauncher on its isolated classpath.
+    annotationProcessor "cpw.mods:modlauncher:10.0.9"
 
     implementation 'com.github.ArclightTeam:mixin-tools:1.0.0'
     annotationProcessor 'com.github.ArclightTeam:mixin-tools:1.0.0'
