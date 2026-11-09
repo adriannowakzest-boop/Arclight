@@ -96,7 +96,7 @@ public class EntityEventDispatcher {
 
     @SubscribeEvent
     public void onEntityTame(AnimalTameEvent event) {
-        event.setCanceled(CraftEventFactory.callEntityTameEvent(event.getAnimal(), event.getTamer()).isCancelled());
+        event.setCanceled(event.isCanceled() || CraftEventFactory.callEntityTameEvent(event.getAnimal(), event.getTamer()).isCancelled());
     }
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
