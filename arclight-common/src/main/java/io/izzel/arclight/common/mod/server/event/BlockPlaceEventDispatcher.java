@@ -54,7 +54,7 @@ public class BlockPlaceEventDispatcher {
                 );
                 placeEvent.setCancelled(event.isCanceled());
                 Bukkit.getPluginManager().callEvent(placeEvent);
-                event.setCanceled(placeEvent.isCancelled() || !placeEvent.canBuild());
+                event.setCanceled(event.isCanceled() || placeEvent.isCancelled() || !placeEvent.canBuild());
             }
         }
     }
@@ -87,7 +87,7 @@ public class BlockPlaceEventDispatcher {
                 );
                 placeEvent.setCancelled(event.isCanceled());
                 Bukkit.getPluginManager().callEvent(placeEvent);
-                event.setCanceled(placeEvent.isCancelled() || !placeEvent.canBuild());
+                event.setCanceled(event.isCanceled() || placeEvent.isCancelled() || !placeEvent.canBuild());
             }
         }
     }
