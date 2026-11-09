@@ -39,9 +39,14 @@ fi
 echo "Preparing Paper 1.20.1 source at $actual_commit"
 (
   cd "$PAPER_DIR"
-  # Paperweight may create commits while applying patch sets in CI.
-  git config user.name "PaperBridge CI"
-  git config user.email "paperbridge-ci@users.noreply.github.com"
+  # Paperweight creates commits in nested Bukkit/CraftBukkit repositories,
+  # so repository-local identity in the Paper root is not sufficient.
+  export GIT_AUTHOR_NAME="PaperBridge CI"
+  export GIT_AUTHOR_EMAIL="paperbridge-ci@users.noreply.github.com"
+  export GIT_COMMITTER_NAME="PaperBridge CI"
+  export GIT_COMMITTER_EMAIL="paperbridge-ci@users.noreply.github.com"
+  git config --global user.name "$GIT_AUTHOR_NAME"
+  git config --global user.email "$GIT_AUTHOR_EMAIL"
   chmod +x ./gradlew
   ./gradlew applyPatches --no-daemon --stacktrace
 )
