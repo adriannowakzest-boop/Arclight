@@ -11,7 +11,10 @@ public class WorldEventDispatcher {
     @SubscribeEvent
     public void onWorldUnload(LevelEvent.Unload event) {
         if (event.getLevel() instanceof ServerLevel level) {
-            ((CraftServerBridge) Bukkit.getServer()).bridge$removeWorld(level);
+            org.bukkit.Server server = Bukkit.getServer();
+            if (server instanceof CraftServerBridge bridge) {
+                bridge.bridge$removeWorld(level);
+            }
         }
     }
 }
