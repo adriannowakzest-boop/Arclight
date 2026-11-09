@@ -19,6 +19,10 @@ public class EntityTeleportEventDispatcher {
             CraftPlayer player = ((ServerPlayerEntityBridge) event.getEntity()).bridge$getBukkitEntity();
             PlayerTeleportEvent bukkitEvent = new PlayerTeleportEvent(player, player.getLocation(), new Location(player.getWorld(), event.getTargetX(), event.getTargetY(), event.getTargetZ()), PlayerTeleportEvent.TeleportCause.ENDER_PEARL);
             Bukkit.getPluginManager().callEvent(bukkitEvent);
+            if (bukkitEvent.getTo() == null) {
+                event.setCanceled(true);
+                return;
+            }
             event.setCanceled(bukkitEvent.isCancelled());
             event.setTargetX(bukkitEvent.getTo().getX());
             event.setTargetY(bukkitEvent.getTo().getY());
@@ -27,6 +31,10 @@ public class EntityTeleportEventDispatcher {
             CraftEntity entity = ((EntityBridge) event.getEntity()).bridge$getBukkitEntity();
             EntityTeleportEvent bukkitEvent = new EntityTeleportEvent(entity, entity.getLocation(), new Location(entity.getWorld(), event.getTargetX(), event.getTargetY(), event.getTargetZ()));
             Bukkit.getPluginManager().callEvent(bukkitEvent);
+            if (bukkitEvent.getTo() == null) {
+                event.setCanceled(true);
+                return;
+            }
             event.setCanceled(bukkitEvent.isCancelled());
             event.setTargetX(bukkitEvent.getTo().getX());
             event.setTargetY(bukkitEvent.getTo().getY());
