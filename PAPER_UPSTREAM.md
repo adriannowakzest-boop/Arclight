@@ -2,7 +2,7 @@
 
 PaperBridge uses a pinned historical Paper source revision as its compatibility reference.
 
-- Upstream: https://github.com/PaperMC/Paper
+- Upstream: https://github.com/PaperMC/Paper-archive (historical source repository)
 - Commit: `773dd724469bae89d0c2075edc3d1ddc8d5b0b18`
 - Upstream commit date: 2023-09-21
 - Minecraft: `1.20.1`
@@ -20,7 +20,7 @@ Run from the Arclight repository root:
 bash scripts/prepare-paper-upstream.sh
 ```
 
-The script clones the official Paper repository into `build/paper-upstream-1.20.1`, checks out the exact commit above, initializes its declared submodules, verifies the checked-out SHA, and runs Paper's `applyPatches` task. Set `PAPER_UPSTREAM_DIR` to use a different disposable working directory.
+The script clones the official Paper archive repository into `build/paper-upstream-1.20.1`, checks out the exact commit above, initializes its declared submodules, verifies the checked-out SHA, and runs Paper's `applyPatches` task. Set `PAPER_UPSTREAM_DIR` to use a different disposable working directory.
 
 The Paper upstream tree is a reference/build input. It is **not yet merged into Arclight's Forge server implementation**. Paper's source layout is based on Paperweight and patched Bukkit/CraftBukkit/Minecraft trees, while Arclight uses ForgeGradle and its own Arclight patches. A successful upstream patch application only proves that the pinned Paper source tree can be reconstructed; it does not prove that Paper runtime patches have been ported to Forge.
 
