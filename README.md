@@ -58,7 +58,7 @@ Get 10% off hosting server with promocode **ARCLIGHT** at [NEXUSNODE](https://ne
 The `paperbridge-1.20.1` branch is an experimental Forge hybrid based on Arclight Trials.
 
 - Minecraft: `1.20.1`
-- Forge: `47.4.28`
+- Forge: `47.4.29`
 - Java: `17`
 - SpongePowered Mixin: `0.8.5` (official Sponge release line)
 - Paper API: `1.20.1-R0.1-SNAPSHOT` is bundled as a first binary-linkage step for plugins compiled against Paper API.
@@ -89,7 +89,7 @@ This adapter is not equivalent to Paper's native plugin provider and is not a cl
 
 The PaperBridge 1.20.1 branch is experimental. The main outstanding tasks are:
 
-- [ ] **Build and startup:** verify clean Java 17 builds, Forge 47.4.28 dependency resolution, packaging, Mixin/refmap configuration, and server start/stop in CI.
+- [ ] **Build and startup:** verify clean Java 17 builds, Forge 47.4.29 dependency resolution, packaging, Mixin/refmap configuration, and server start/stop in CI.
 - [ ] **Paper runtime:** verify the pinned Paper source preparation workflow, port the required Paper patches, implement missing runtime behavior, and add API compatibility tests.
 - [ ] **Plugin loading:** complete loader diagnostics, native `paper-plugin.yml` support, dependency/classloader handling, shutdown safety, and Forge runtime tests.
 - [ ] **Forge integration:** validate lifecycle and event ordering, modded blocks/items/entities/dimensions, capabilities, chunk synchronization, ticking, and duplicate-event prevention.
