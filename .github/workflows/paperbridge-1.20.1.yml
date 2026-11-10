@@ -14,7 +14,7 @@ permissions:
 
 jobs:
   build:
-    name: Minecraft 1.20.1 / Forge 47.4.28
+    name: Minecraft 1.20.1 / Forge 47.4.29
     runs-on: ubuntu-latest
     timeout-minutes: 90
     steps:
