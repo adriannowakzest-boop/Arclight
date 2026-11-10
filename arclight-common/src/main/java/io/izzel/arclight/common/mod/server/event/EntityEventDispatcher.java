@@ -57,7 +57,8 @@ public class EntityEventDispatcher {
             case NATURAL -> CreatureSpawnEvent.SpawnReason.NATURAL;
             case CHUNK_GENERATION -> CreatureSpawnEvent.SpawnReason.CHUNK_GEN;
             case SPAWNER -> CreatureSpawnEvent.SpawnReason.SPAWNER;
-            case STRUCTURE, EVENT, CONVERSION, BUCKET -> CreatureSpawnEvent.SpawnReason.DEFAULT;
+            case EVENT -> CreatureSpawnEvent.SpawnReason.RAID;
+            case STRUCTURE, CONVERSION, BUCKET -> CreatureSpawnEvent.SpawnReason.DEFAULT;
             case BREEDING -> CreatureSpawnEvent.SpawnReason.BREEDING;
             case MOB_SUMMONED, TRIGGERED -> CreatureSpawnEvent.SpawnReason.CUSTOM;
             case JOCKEY -> CreatureSpawnEvent.SpawnReason.JOCKEY;
