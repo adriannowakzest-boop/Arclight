@@ -8,7 +8,7 @@ Cel: rozwijać Arclight dla Minecraft 1.20.1 tak, aby na jednym serwerze działa
 
 - [x] Utworzyć gałąź `paperbridge-1.20.1` na bazie linii Arclight Trials dla Minecraft 1.20.1.
 - [x] Ustawić Minecraft na `1.20.1`.
-- [x] Ustawić Forge na `47.4.28`.
+- [x] Ustawić Forge na `47.4.29`.
 - [x] Ujednolicić wersję SpongePowered Mixin na `0.8.5` w konfiguracji projektu.
 - [x] Ustawić procesor adnotacji Mixin w module wspólnym.
 - [x] Dodać repozytorium Maven PaperMC.
@@ -20,7 +20,7 @@ Cel: rozwijać Arclight dla Minecraft 1.20.1 tak, aby na jednym serwerze działa
 
 - [ ] Uruchomić `./gradlew cleanBuild remapSpigotJar idea --no-daemon --stacktrace` na czystym środowisku Java 17.
 - [ ] Uruchomić `./gradlew build collect --no-daemon --stacktrace` i naprawić wszystkie błędy kompilacji.
-- [ ] Potwierdzić, że Forge `1.20.1-47.4.28` rozwiązuje się z Maven i uruchamia serwer.
+- [ ] Potwierdzić, że Forge `1.20.1-47.4.29` rozwiązuje się z Maven i uruchamia serwer.
 - [ ] Potwierdzić, że Paper API `1.20.1-R0.1-SNAPSHOT` rozwiązuje się poprawnie i nie powoduje konfliktów zależności ze Spigot/Bukkit.
 - [ ] Sprawdzić, czy pakowanie API do JAR-a nie duplikuje klas lub bibliotek dostarczanych przez Forge/Arclight.
 - [ ] Zweryfikować generowanie `mixins.arclight.refmap.json` oraz jego obecność w artefakcie.
@@ -58,7 +58,7 @@ Cel: rozwijać Arclight dla Minecraft 1.20.1 tak, aby na jednym serwerze działa
 - [x] Walidować strukturę `dependencies`, obsługiwane zakresy oraz typy pól `required`, `join-classpath` i `load`; odrzucać błędne deskryptory zamiast po cichu zmieniać ich znaczenie.
 - [x] Walidować typy podstawowych metadanych, nazwę klasy `main`, fazę ładowania oraz listy `authors`, `provides`, `libraries`; odrzucać nieznane opcje zależności serwera.
 - [x] Dodawać ścieżkę JAR-a do błędów odczytu deskryptora oraz nazwę JAR-a do błędów ładowania klas pluginu.
-- [ ] Potwierdzić testami i buildem, że fallback działa na Forge 47.4.28.
+- [ ] Potwierdzić testami i buildem, że fallback działa na Forge 47.4.29.
 - [ ] Sprawdzić bezpieczne wyłączanie pluginu podczas zatrzymania serwera.
 
 ## 4. Integracja Forge
@@ -119,4 +119,4 @@ Istniejące mosty Forge → Bukkit w kodzie obejmują event bus, obsługę zdarz
 
 ## Kryterium ukończenia
 
-PaperBridge 1.20.1 można uznać za gotowy do pierwszego wydania testowego, gdy czysty build przechodzi w CI, serwer uruchamia się na Forge 47.4.28 / Java 17, pluginy Bukkit/Spigot są ładowane, kluczowe elementy Paper API są zaimplementowane i zweryfikowane, a wyniki testów są opublikowane w macierzy kompatybilności.
+PaperBridge 1.20.1 można uznać za gotowy do pierwszego wydania testowego, gdy czysty build przechodzi w CI, serwer uruchamia się na Forge 47.4.29 / Java 17, pluginy Bukkit/Spigot są ładowane, kluczowe elementy Paper API są zaimplementowane i zweryfikowane, a wyniki testów są opublikowane w macierzy kompatybilności.
