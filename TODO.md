@@ -83,6 +83,7 @@ Istniejące mosty Forge → Bukkit w kodzie obejmują event bus, obsługę zdarz
 - [x] Wywoływać Bukkit `WorldUnloadEvent` przed usunięciem świata przez Forge; respektować anulowanie unloadu.
 - [ ] Zmapować i zweryfikować cykl życia serwera, świata, gracza, encji i chunków pomiędzy Forge oraz Bukkit/Paper.
 - [x] Zabezpieczyć callbacki unload chunków i światów, gdy Bukkit Server nie jest już dostępny podczas zamykania.
+- [x] Kontynuować kolejkę callbacków serwera po błędzie RuntimeException w pojedynczym callbacku, aby nie blokować kolejnych zdarzeń chunków.
 - [ ] Ustalić i przetestować jednoznaczną kolejność wywołań eventów Forge i Bukkit/Paper.
 - [ ] Przetestować bloki, przedmioty, encje i wymiary dodane przez mody.
 - [ ] Przetestować capability Forge oraz dostęp pluginów do obiektów modowanych.
