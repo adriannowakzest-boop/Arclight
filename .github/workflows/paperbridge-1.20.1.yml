@@ -45,6 +45,9 @@ jobs:
       - name: Build Arclight Forge 1.20.1
         run: ./gradlew build collect --no-daemon --stacktrace
 
+      - name: Verify packaged installer, API, and Mixin wiring
+        run: bash scripts/verify-paperbridge-artifact.sh build/libs
+
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
         with:

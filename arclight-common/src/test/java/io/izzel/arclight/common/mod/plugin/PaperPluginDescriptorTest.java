@@ -254,6 +254,58 @@ public class PaperPluginDescriptorTest {
         PaperPluginDescriptor.read(jar);
     }
 
+
+    @Test
+    public void returnsNullWhenJarHasNoSupportedDescriptor() throws Exception {
+        File jar = createJar("README.txt", "not a plugin");
+        assertNull(PaperPluginDescriptor.read(jar));
+    }
+
+    @Test
+    public void translatesStartupPhaseAndMetadata() throws Exception {
+        File jar = createJar("paper-plugin.yml",
+            "name: StartupPlugin\\n" +
+            "version: '1.0'\\n" +
+            "main: example.StartupPlugin\\n" +
+            "load: STARTUP\\n" +
+            "description: Startup test plugin\\n" +
+            "website: https://example.org\\n" +
+            "authors: [Example Team]\\n"
+        );
+
+        PluginDescriptionFile description = PaperPluginDescriptor.read(jar);
+        assertNotNull(description);
+        assertEquals(org.bukkit.plugin.PluginLoadOrder.STARTUP, description.getLoad());
+        assertEquals("Startup test plugin", description.getDescription());
+        assertEquals("https://example.org", description.getWebsite());
+        assertTrue(description.getAuthors().contains("Example Team"));
+    }
+
+    @Test(expected = InvalidDescriptionException.class)
+    public void rejectsCustomPaperLoader() throws Exception {
+        File jar = createJar("paper-plugin.yml",
+            "name: CustomLoaderPlugin\\n" +
+            "version: '1.0'\\n" +
+            "main: example.Plugin\\n" +
+            "loader: example.CustomLoader\\n"
+        );
+        PaperPluginDescriptor.read(jar);
+    }
+
+    @Test(expected = InvalidDescriptionException.class)
+    public void rejectsNonEmptyBootstrapDependencies() throws Exception {
+        File jar = createJar("paper-plugin.yml",
+            "name: BootstrapDependencyPlugin\\n" +
+            "version: '1.0'\\n" +
+            "main: example.Plugin\\n" +
+            "dependencies:\\n" +
+            "  bootstrap:\\n" +
+            "    CoreLib:\\n" +
+            "      required: true\\n"
+        );
+        PaperPluginDescriptor.read(jar);
+    }
+
     private static File createJar(String... entries) throws Exception {
         if (entries.length % 2 != 0) {
             throw new IllegalArgumentException("Entries must be name/content pairs");
