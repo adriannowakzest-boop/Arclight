@@ -1,12 +1,15 @@
 package io.izzel.arclight.common.mod.util;
 
-import io.izzel.arclight.common.mod.ArclightMod;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Executor;
 
 public class ArclightCallbackExecutor implements Executor, Runnable {
+
+    private static final Logger LOGGER = LogManager.getLogger(ArclightCallbackExecutor.class);
 
     private final Queue<Runnable> queue = new ConcurrentLinkedQueue<>();
 
@@ -29,7 +32,7 @@ public class ArclightCallbackExecutor implements Executor, Runnable {
                 poll.run();
             } catch (RuntimeException exception) {
                 // A broken callback must not strand later chunk load/unload callbacks.
-                ArclightMod.LOGGER.error("Failed to execute queued server callback", exception);
+                LOGGER.error("Failed to execute queued server callback", exception);
             }
         }
     }
