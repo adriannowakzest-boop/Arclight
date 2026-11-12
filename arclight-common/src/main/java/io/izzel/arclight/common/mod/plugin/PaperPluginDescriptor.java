@@ -58,9 +58,15 @@ public final class PaperPluginDescriptor {
                 return convert(paper);
             }
         } catch (InvalidDescriptionException exception) {
-            throw exception;
+            throw new InvalidDescriptionException(
+                exception,
+                "Cannot load plugin descriptor from '" + pluginJar.getAbsolutePath() + "': " + exception.getMessage()
+            );
         } catch (IOException | InvalidConfigurationException | RuntimeException exception) {
-            throw new InvalidDescriptionException(exception);
+            throw new InvalidDescriptionException(
+                exception,
+                "Cannot read plugin descriptor from '" + pluginJar.getAbsolutePath() + "': " + exception.getMessage()
+            );
         }
     }
 

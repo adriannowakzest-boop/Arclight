@@ -68,15 +68,7 @@ public abstract class JavaPluginLoaderMixin implements JavaPluginLoaderBridge {
     @Inject(method = "getPluginDescription(Ljava/io/File;)Lorg/bukkit/plugin/PluginDescriptionFile;", at = @At("HEAD"), cancellable = true)
     private void arclight$paperPluginDescriptor(File file, CallbackInfoReturnable<PluginDescriptionFile> cir) throws InvalidDescriptionException {
         final PluginDescriptionFile description;
-        try {
-            description = PaperPluginDescriptor.read(file);
-        } catch (InvalidDescriptionException exception) {
-            String pluginPath = file == null ? "<unknown>" : file.getAbsolutePath();
-            throw new InvalidDescriptionException(
-                exception,
-                "Cannot load plugin descriptor from '" + pluginPath + "': " + exception.getMessage()
-            );
-        }
+        description = PaperPluginDescriptor.read(file);
         if (description != null) {
             ArclightMod.LOGGER.warn(
                 "PaperBridge: loading {} through the legacy Bukkit plugin loader. " +

@@ -286,6 +286,34 @@ public class PaperPluginDescriptorTest {
 
 
     @Test
+    public void includesJarPathWhenDescriptorIsInvalid() throws Exception {
+        File jar = createJar("paper-plugin.yml",
+            "name: 123\\n" +
+            "version: '1.0'\\n" +
+            "main: example.Plugin\\n"
+        );
+        try {
+            PaperPluginDescriptor.read(jar);
+            fail("Expected an invalid descriptor error");
+        } catch (InvalidDescriptionException exception) {
+            assertTrue(exception.getMessage().contains(jar.getAbsolutePath()));
+        }
+    }
+
+    @Test
+    public void includesJarPathWhenYamlCannotBeParsed() throws Exception {
+        File jar = createJar("paper-plugin.yml",
+            "name: [unterminated\\n"
+        );
+        try {
+            PaperPluginDescriptor.read(jar);
+            fail("Expected malformed YAML to be rejected");
+        } catch (InvalidDescriptionException exception) {
+            assertTrue(exception.getMessage().contains(jar.getAbsolutePath()));
+        }
+    }
+
+    @Test
     public void returnsNullWhenJarHasNoSupportedDescriptor() throws Exception {
         File jar = createJar("README.txt", "not a plugin");
         assertNull(PaperPluginDescriptor.read(jar));
