@@ -27,11 +27,11 @@ public class PaperPluginDescriptorTest {
             "  server:\n" +
             "    CoreLib:\n" +
             "      required: true\n" +
-            "      load: OMIT\n" +
+            "      load: AFTER\n" +
             "      join-classpath: true\n" +
             "    PlaceholderAPI:\n" +
             "      required: false\n" +
-            "      load: OMIT\n" +
+            "      load: AFTER\n" +
             "      join-classpath: true\n" +
             "    LatePlugin:\n" +
             "      required: false\n" +
