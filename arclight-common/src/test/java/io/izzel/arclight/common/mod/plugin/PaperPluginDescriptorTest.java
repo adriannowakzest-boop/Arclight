@@ -264,13 +264,13 @@ public class PaperPluginDescriptorTest {
     @Test
     public void translatesStartupPhaseAndMetadata() throws Exception {
         File jar = createJar("paper-plugin.yml",
-            "name: StartupPlugin\\n" +
-            "version: '1.0'\\n" +
-            "main: example.StartupPlugin\\n" +
-            "load: STARTUP\\n" +
-            "description: Startup test plugin\\n" +
-            "website: https://example.org\\n" +
-            "authors: [Example Team]\\n"
+            "name: StartupPlugin\n" +
+            "version: '1.0'\n" +
+            "main: example.StartupPlugin\n" +
+            "load: STARTUP\n" +
+            "description: Startup test plugin\n" +
+            "website: https://example.org\n" +
+            "authors: [Example Team]\n"
         );
 
         PluginDescriptionFile description = PaperPluginDescriptor.read(jar);
@@ -284,10 +284,10 @@ public class PaperPluginDescriptorTest {
     @Test(expected = InvalidDescriptionException.class)
     public void rejectsCustomPaperLoader() throws Exception {
         File jar = createJar("paper-plugin.yml",
-            "name: CustomLoaderPlugin\\n" +
-            "version: '1.0'\\n" +
-            "main: example.Plugin\\n" +
-            "loader: example.CustomLoader\\n"
+            "name: CustomLoaderPlugin\n" +
+            "version: '1.0'\n" +
+            "main: example.Plugin\n" +
+            "loader: example.CustomLoader\n"
         );
         PaperPluginDescriptor.read(jar);
     }
@@ -295,13 +295,13 @@ public class PaperPluginDescriptorTest {
     @Test(expected = InvalidDescriptionException.class)
     public void rejectsNonEmptyBootstrapDependencies() throws Exception {
         File jar = createJar("paper-plugin.yml",
-            "name: BootstrapDependencyPlugin\\n" +
-            "version: '1.0'\\n" +
-            "main: example.Plugin\\n" +
-            "dependencies:\\n" +
-            "  bootstrap:\\n" +
-            "    CoreLib:\\n" +
-            "      required: true\\n"
+            "name: BootstrapDependencyPlugin\n" +
+            "version: '1.0'\n" +
+            "main: example.Plugin\n" +
+            "dependencies:\n" +
+            "  bootstrap:\n" +
+            "    CoreLib:\n" +
+            "      required: true\n"
         );
         PaperPluginDescriptor.read(jar);
     }
