@@ -34,6 +34,8 @@ Cel: rozwijać Arclight dla Minecraft 1.20.1 tak, aby na jednym serwerze działa
 - [ ] Zweryfikować w CI skrypt odtwarzający źródła i nakładający patche Paper (`scripts/prepare-paper-upstream.sh`).
 - [ ] Przygotować proces portowania patchy Paper na kod Arclight/Forge; samo odtworzenie drzewa Paper nie jest integracją runtime.
 - [ ] Przenieść wymagane poprawki serwera Paper bez nadpisywania istniejących poprawek Arclight.
+- [x] Przenieść bezkolizyjne klasy identyfikacyjne `com.destroystokyo.paper.PaperConfig` i `PaperWorldConfig` z patcha Paper `0005-Paper-config-files`.
+- [ ] Przenieść właściwy system konfiguracji Paper (Configurate, konfiguracja globalna/światów i integracja z cyklem życia); same klasy identyfikacyjne nie implementują konfiguracji.
 - [ ] Zaimplementować brakujące klasy i zachowania Paper API wymagane w runtime — samo dołączenie pliku Paper API do JAR-a nie wystarcza.
 - [ ] Uzupełnić Paper-specific zachowania świata, chunków, encji, ticków i konfiguracji.
 - [ ] Uzupełnić API zdarzeń Paper i sprawdzić kolejność wywołań względem zdarzeń Bukkit oraz Forge.
