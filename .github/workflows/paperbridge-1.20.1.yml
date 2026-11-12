@@ -36,6 +36,9 @@ jobs:
       - name: Prepare pinned Paper 1.20.1 upstream sources
         run: bash scripts/prepare-paper-upstream.sh
 
+      - name: Audit Paper patch impact against Arclight mixins
+        run: bash scripts/audit-paper-patch-porting.sh
+
       - name: Prepare and remap Bukkit sources
         run: ./gradlew cleanBuild remapSpigotJar idea --no-daemon --stacktrace
 
@@ -47,6 +50,14 @@ jobs:
 
       - name: Verify packaged installer, API, and Mixin wiring
         run: bash scripts/verify-paperbridge-artifact.sh build/libs
+
+      - name: Upload Paper patch porting inventory
+        uses: actions/upload-artifact@v4
+        with:
+          name: Paper-patch-porting-inventory
+          path: build/paper-patch-porting-inventory.md
+          if-no-files-found: error
+          retention-days: 14
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
