@@ -77,6 +77,8 @@ dependencies {
     implementation 'net.md-5:bungeecord-chat:1.16-R0.4'
     implementation 'mysql:mysql-connector-java:5.1.49'
     implementation 'org.yaml:snakeyaml:2.0'
+    // Paper's configuration API and YAML loader implementation.
+    implementation 'org.spongepowered:configurate-yaml:4.1.2'
     implementation "io.izzel:tools:$toolsVersion"
     implementation "io.izzel.arclight:arclight-api:$apiVersion"
     implementation project(':i18n-config')
