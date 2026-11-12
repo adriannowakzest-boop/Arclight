@@ -15,6 +15,14 @@ if [[ ! -d "$ARCLIGHT_SOURCE" ]]; then
 fi
 
 mkdir -p "$(dirname "$OUTPUT")"
+# Index mixins once; scanning the complete source tree for every upstream file is
+# prohibitively expensive because Paper contains hundreds of patches.
+declare -A MIXIN_BY_BASE=()
+while IFS= read -r mixin; do
+  base="$(basename "$mixin" Mixin.java)"
+  MIXIN_BY_BASE["$base"]="$mixin"
+done < <(find "$ARCLIGHT_SOURCE" -type f -name '*Mixin.java' -print)
+
 {
   echo "# Paper 1.20.1 patch porting inventory"
   echo
@@ -46,11 +54,10 @@ mkdir -p "$(dirname "$OUTPUT")"
           elif [[ "$risk" != "high" ]]; then
             risk="medium"
           fi
-          while IFS= read -r match; do
-            [[ -n "$match" ]] || continue
+          if [[ -n "${MIXIN_BY_BASE[$base]:-}" ]]; then
             match_count=$((match_count + 1))
-            matches+=("${match#"$ARCLIGHT_SOURCE/"}")
-          done < <(find "$ARCLIGHT_SOURCE" -type f -name "*${base}*Mixin.java" -print 2>/dev/null | sort -u)
+            matches+=("${MIXIN_BY_BASE[$base]#"$ARCLIGHT_SOURCE/"}")
+          fi
         fi
       done
       match_text="—"
