@@ -214,7 +214,15 @@ public final class PaperPluginDescriptor {
                     );
                 }
 
-                if ("BEFORE".equals(relativeOrder)) {
+                if ("OMIT".equals(relativeOrder)) {
+                    // Bukkit's depend/softdepend/loadbefore declarations always impose an order.
+                    // Paper OMIT explicitly does not, so translating it would silently change
+                    // plugin startup semantics. The legacy loader has no equivalent relation.
+                    throw new InvalidDescriptionException(
+                        "Paper dependency '" + dependencyName + "' uses load: OMIT, which the legacy Bukkit loader cannot represent without changing load order. " +
+                        "Use load: AFTER, or use a native Paper plugin loader."
+                    );
+                } else if ("BEFORE".equals(relativeOrder)) {
                     if (isRequired) {
                         throw new InvalidDescriptionException(
                             "Required Paper dependency '" + dependencyName + "' uses load: BEFORE. " +
@@ -226,7 +234,7 @@ public final class PaperPluginDescriptor {
                     // Bukkit depend loads this plugin after the dependency, matching Paper AFTER.
                     required.add(dependencyName);
                 } else {
-                    // softdepend preserves optional availability and AFTER ordering where possible.
+                    // softdepend preserves optional availability and AFTER ordering.
                     optional.add(dependencyName);
                 }
             }

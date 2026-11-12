@@ -18,8 +18,8 @@ Cel: rozwijać Arclight dla Minecraft 1.20.1 tak, aby na jednym serwerze działa
 
 ## 1. Stabilny build i uruchamianie
 
-- [ ] Uruchomić `./gradlew cleanBuild remapSpigotJar idea --no-daemon --stacktrace` na czystym środowisku Java 17.
-- [ ] Uruchomić `./gradlew build collect --no-daemon --stacktrace` i naprawić wszystkie błędy kompilacji.
+- [x] Uruchomić `./gradlew cleanBuild remapSpigotJar idea --no-daemon --stacktrace` na czystym środowisku Java 17 (PaperBridge CI, Java 17).
+- [x] Uruchomić `./gradlew build collect --no-daemon --stacktrace` i naprawić wszystkie błędy kompilacji (PaperBridge CI, Forge 47.4.29).
 - [ ] Potwierdzić, że Forge `1.20.1-47.4.29` rozwiązuje się z Maven i uruchamia serwer.
 - [ ] Potwierdzić, że Paper API `1.20.1-R0.1-SNAPSHOT` rozwiązuje się poprawnie i nie powoduje konfliktów zależności ze Spigot/Bukkit.
 - [ ] Sprawdzić, czy pakowanie API do JAR-a nie duplikuje klas lub bibliotek dostarczanych przez Forge/Arclight.

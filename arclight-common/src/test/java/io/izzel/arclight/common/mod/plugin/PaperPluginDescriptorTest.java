@@ -116,6 +116,36 @@ public class PaperPluginDescriptorTest {
     }
 
     @Test(expected = InvalidDescriptionException.class)
+    public void rejectsRequiredOmitDependencyBecauseBukkitWouldImposeLoadOrder() throws Exception {
+        File jar = createJar("paper-plugin.yml",
+            "name: RequiredOmitPlugin\\n" +
+            "version: '1.0'\\n" +
+            "main: example.Plugin\\n" +
+            "dependencies:\\n" +
+            "  server:\\n" +
+            "    CoreLib:\\n" +
+            "      required: true\\n" +
+            "      load: OMIT\\n"
+        );
+        PaperPluginDescriptor.read(jar);
+    }
+
+    @Test(expected = InvalidDescriptionException.class)
+    public void rejectsOptionalOmitDependencyBecauseBukkitWouldImposeLoadOrder() throws Exception {
+        File jar = createJar("paper-plugin.yml",
+            "name: OptionalOmitPlugin\\n" +
+            "version: '1.0'\\n" +
+            "main: example.Plugin\\n" +
+            "dependencies:\\n" +
+            "  server:\\n" +
+            "    CoreLib:\\n" +
+            "      required: false\\n" +
+            "      load: OMIT\\n"
+        );
+        PaperPluginDescriptor.read(jar);
+    }
+
+    @Test(expected = InvalidDescriptionException.class)
     public void rejectsRequiredBeforeDependencyThatLegacyLoaderCannotExpress() throws Exception {
         File jar = createJar("paper-plugin.yml",
             "name: EarlyDependencyPlugin\n" +
