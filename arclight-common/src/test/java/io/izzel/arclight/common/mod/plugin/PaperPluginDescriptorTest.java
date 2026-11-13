@@ -115,34 +115,44 @@ public class PaperPluginDescriptorTest {
         assertTrue(description.getDepend().contains("CoreLib"));
     }
 
-    @Test(expected = InvalidDescriptionException.class)
+    @Test
     public void rejectsRequiredOmitDependencyBecauseBukkitWouldImposeLoadOrder() throws Exception {
         File jar = createJar("paper-plugin.yml",
-            "name: RequiredOmitPlugin\\n" +
-            "version: '1.0'\\n" +
-            "main: example.Plugin\\n" +
-            "dependencies:\\n" +
-            "  server:\\n" +
-            "    CoreLib:\\n" +
-            "      required: true\\n" +
-            "      load: OMIT\\n"
+            "name: RequiredOmitPlugin\n" +
+            "version: '1.0'\n" +
+            "main: example.Plugin\n" +
+            "dependencies:\n" +
+            "  server:\n" +
+            "    CoreLib:\n" +
+            "      required: true\n" +
+            "      load: OMIT\n"
         );
-        PaperPluginDescriptor.read(jar);
+        try {
+            PaperPluginDescriptor.read(jar);
+            fail("Expected load: OMIT to be rejected");
+        } catch (InvalidDescriptionException exception) {
+            assertTrue(exception.getMessage().contains("load: OMIT"));
+        }
     }
 
-    @Test(expected = InvalidDescriptionException.class)
+    @Test
     public void rejectsOptionalOmitDependencyBecauseBukkitWouldImposeLoadOrder() throws Exception {
         File jar = createJar("paper-plugin.yml",
-            "name: OptionalOmitPlugin\\n" +
-            "version: '1.0'\\n" +
-            "main: example.Plugin\\n" +
-            "dependencies:\\n" +
-            "  server:\\n" +
-            "    CoreLib:\\n" +
-            "      required: false\\n" +
-            "      load: OMIT\\n"
+            "name: OptionalOmitPlugin\n" +
+            "version: '1.0'\n" +
+            "main: example.Plugin\n" +
+            "dependencies:\n" +
+            "  server:\n" +
+            "    CoreLib:\n" +
+            "      required: false\n" +
+            "      load: OMIT\n"
         );
-        PaperPluginDescriptor.read(jar);
+        try {
+            PaperPluginDescriptor.read(jar);
+            fail("Expected load: OMIT to be rejected");
+        } catch (InvalidDescriptionException exception) {
+            assertTrue(exception.getMessage().contains("load: OMIT"));
+        }
     }
 
     @Test(expected = InvalidDescriptionException.class)
@@ -288,9 +298,9 @@ public class PaperPluginDescriptorTest {
     @Test
     public void includesJarPathWhenDescriptorIsInvalid() throws Exception {
         File jar = createJar("paper-plugin.yml",
-            "name: 123\\n" +
-            "version: '1.0'\\n" +
-            "main: example.Plugin\\n"
+            "name: 123\n" +
+            "version: '1.0'\n" +
+            "main: example.Plugin\n"
         );
         try {
             PaperPluginDescriptor.read(jar);
@@ -303,7 +313,7 @@ public class PaperPluginDescriptorTest {
     @Test
     public void includesJarPathWhenYamlCannotBeParsed() throws Exception {
         File jar = createJar("paper-plugin.yml",
-            "name: [unterminated\\n"
+            "name: [unterminated\n"
         );
         try {
             PaperPluginDescriptor.read(jar);
