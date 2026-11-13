@@ -38,4 +38,23 @@ public class PaperConfigurationLoaderTest {
             Files.deleteIfExists(file);
         }
     }
+    @Test
+    public void writesNestedKeysWithPaperIndentationAndNaturalOrdering() throws Exception {
+        Path file = Files.createTempFile("paperbridge-config-nested-", ".yml");
+        try {
+            YamlConfigurationLoader loader = ConfigurationLoaders.naturallySortedWithoutHeader(file);
+            ConfigurationNode node = loader.load();
+            node.node("settings").node("z-last").set(true);
+            node.node("settings").node("a-first").set(true);
+            loader.save(node);
+
+            String yaml = Files.readString(file, StandardCharsets.UTF_8);
+            assertTrue(yaml.contains("settings:\n  a-first: true"));
+            assertTrue(yaml.contains("  a-first: true\n  z-last: true"));
+            assertFalse(yaml.startsWith("#"));
+        } finally {
+            Files.deleteIfExists(file);
+        }
+    }
+
 }
