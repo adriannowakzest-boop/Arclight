@@ -10,8 +10,7 @@ import net.minecraft.commands.arguments.NbtPathArgument;
 import org.spongepowered.configurate.serialize.ScalarSerializer;
 import org.spongepowered.configurate.serialize.SerializationException;
 
-public class NbtPathSerializer extends ScalarSerializer<NbtPathArgument.NbtPath> {
-
+public final class NbtPathSerializer extends ScalarSerializer<NbtPathArgument.NbtPath> {
     public static final NbtPathSerializer SERIALIZER = new NbtPathSerializer();
     private static final NbtPathArgument DUMMY_ARGUMENT = new NbtPathArgument();
 
@@ -30,22 +29,22 @@ public class NbtPathSerializer extends ScalarSerializer<NbtPathArgument.NbtPath>
     }
 
     public static List<NbtPathArgument.NbtPath> fromString(final List<String> tags) {
-        List<NbtPathArgument.NbtPath> paths = new ArrayList<>();
-        try {
-            for (final String tag : tags) {
+        final List<NbtPathArgument.NbtPath> paths = new ArrayList<>();
+        for (final String tag : tags) {
+            try {
                 paths.add(fromString(tag));
+            } catch (final SerializationException ex) {
+                throw new IllegalArgumentException("Invalid NBT path: " + tag, ex);
             }
-        } catch (SerializationException ex) {
-            NbtPathSerializer.<RuntimeException>sneakyThrow(ex);
         }
         return List.copyOf(paths);
     }
 
-    @SuppressWarnings("unchecked")\n    private static <T extends Throwable> void sneakyThrow(final Throwable throwable) throws T {\n        throw (T) throwable;\n    }\n\n    private static NbtPathArgument.NbtPath fromString(final String tag) throws SerializationException {
+    private static NbtPathArgument.NbtPath fromString(final String tag) throws SerializationException {
         try {
             return DUMMY_ARGUMENT.parse(new StringReader(tag));
-        } catch (CommandSyntaxException e) {
-            throw new SerializationException(NbtPathArgument.NbtPath.class, e);
+        } catch (final CommandSyntaxException ex) {
+            throw new SerializationException(NbtPathArgument.NbtPath.class, ex);
         }
     }
 }
