@@ -1,6 +1,5 @@
 package io.papermc.paper.configuration;
 
-import co.aikar.timings.MinecraftTimings;
 import io.papermc.paper.configuration.constraint.Constraint;
 import io.papermc.paper.configuration.constraint.Constraints;
 import io.papermc.paper.configuration.type.IntOr;
@@ -65,7 +64,7 @@ public class GlobalConfiguration extends ConfigurationPart {
 
         @Override
         public void postProcess() {
-            MinecraftTimings.processConfig(this);
+            // Aikar Timings is not part of the Forge runtime; this hook is intentionally deferred.
         }
     }
 

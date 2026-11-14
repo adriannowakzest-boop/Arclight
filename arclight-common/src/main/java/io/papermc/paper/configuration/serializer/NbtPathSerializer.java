@@ -1,6 +1,5 @@
 package io.papermc.paper.configuration.serializer;
 
-import com.destroystokyo.paper.util.SneakyThrow;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import java.lang.reflect.Type;
@@ -37,12 +36,12 @@ public class NbtPathSerializer extends ScalarSerializer<NbtPathArgument.NbtPath>
                 paths.add(fromString(tag));
             }
         } catch (SerializationException ex) {
-            SneakyThrow.sneaky(ex);
+            NbtPathSerializer.<RuntimeException>sneakyThrow(ex);
         }
         return List.copyOf(paths);
     }
 
-    private static NbtPathArgument.NbtPath fromString(final String tag) throws SerializationException {
+    @SuppressWarnings("unchecked")\n    private static <T extends Throwable> void sneakyThrow(final Throwable throwable) throws T {\n        throw (T) throwable;\n    }\n\n    private static NbtPathArgument.NbtPath fromString(final String tag) throws SerializationException {
         try {
             return DUMMY_ARGUMENT.parse(new StringReader(tag));
         } catch (CommandSyntaxException e) {
