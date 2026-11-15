@@ -9,4 +9,8 @@ public class ArclightModMinecart extends CraftMinecart {
     public ArclightModMinecart(CraftServer server, AbstractMinecart entity) {
         super(server, entity);
     }
+    @Override
+    public String getScoreboardEntryName() {
+        return getHandle().getScoreboardName();
+    }
 }

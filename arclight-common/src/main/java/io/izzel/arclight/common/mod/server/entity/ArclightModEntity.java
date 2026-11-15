@@ -9,4 +9,8 @@ public class ArclightModEntity extends CraftEntity {
     public ArclightModEntity(CraftServer server, Entity entity) {
         super(server, entity);
     }
+    @Override
+    public String getScoreboardEntryName() {
+        return getHandle().getScoreboardName();
+    }
 }
