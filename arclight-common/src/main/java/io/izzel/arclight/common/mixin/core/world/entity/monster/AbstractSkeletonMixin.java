@@ -38,7 +38,7 @@ public abstract class AbstractSkeletonMixin extends PathfinderMobMixin implement
 
     @Redirect(method = "aiStep", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Mob;isSunBurnTick()Z"))
     private boolean arclight$respectShouldBurnInDay(Mob mob) {
-        return this.arclight$shouldBurnInDay && mob.isSunBurnTick();
+        return this.arclight$shouldBurnInDay && ((io.izzel.arclight.common.mixin.core.world.entity.MobMixin) (Object) mob).arclight$invokeIsSunBurnTick();
     }
 
     @Inject(method = "performRangedAttack", cancellable = true, locals = LocalCapture.CAPTURE_FAILHARD,

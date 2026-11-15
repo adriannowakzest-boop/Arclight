@@ -60,6 +60,7 @@ dependencies {
     minecraft "net.minecraftforge:forge:$minecraftVersion-$forgeVersion"
     // Compile CraftBukkit against Spigot API; Paper API is bundled separately for plugin linkage.
     implementation "org.spigotmc:spigot-api:$minecraftVersion-R0.1-SNAPSHOT@jar"
+    compileOnly files("$buildDir/arclight_cache/spigot-$minecraftVersion-mapped-deobf.jar")
     implementation 'org.jetbrains:annotations:23.0.0'
 
     implementation "org.spongepowered:mixin:$mixinVersion"

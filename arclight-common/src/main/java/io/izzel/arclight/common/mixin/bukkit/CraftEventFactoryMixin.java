@@ -39,6 +39,7 @@ import org.bukkit.event.block.EntityBlockFormEvent;
 import org.bukkit.event.block.NotePlayEvent;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageByBlockEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.ItemSpawnEvent;
 import org.bukkit.event.player.PlayerSignOpenEvent;
@@ -78,11 +79,12 @@ public class CraftEventFactoryMixin {
 
     @Inject(method = "handleEntityDamageEvent(Lnet/minecraft/world/entity/Entity;Lnet/minecraft/world/damagesource/DamageSource;Ljava/util/Map;Ljava/util/Map;Z)Lorg/bukkit/event/entity/EntityDamageEvent;", cancellable = true, at = @At(value = "NEW", target = "java/lang/IllegalStateException"))
     private static void arclight$unhandledDamage(Entity entity, DamageSource source, Map<EntityDamageEvent.DamageModifier, Double> modifiers, Map<EntityDamageEvent.DamageModifier, Function<? super Double, Double>> modifierFunctions, boolean cancelled, CallbackInfoReturnable<EntityDamageEvent> cir) {
-        // todo blockDamage is lost
         EntityDamageEvent event;
         if (source.getEntity() != null) {
             // ArclightMod.LOGGER.debug("Unhandled damage of {} by {} from {}", entity, source.getEntity(), source.msgId);
             event = new EntityDamageByEntityEvent(((EntityBridge) source.getEntity()).bridge$getBukkitEntity(), ((EntityBridge) entity).bridge$getBukkitEntity(), EntityDamageEvent.DamageCause.CUSTOM, modifiers, modifierFunctions);
+        } else if (blockDamage != null) {
+            event = new EntityDamageByBlockEvent(blockDamage, ((EntityBridge) entity).bridge$getBukkitEntity(), EntityDamageEvent.DamageCause.CUSTOM, modifiers, modifierFunctions);
         } else {
             // ArclightMod.LOGGER.debug("Unhandled damage of {} from {}", entity, source.msgId);
             event = new EntityDamageEvent(((EntityBridge) entity).bridge$getBukkitEntity(), EntityDamageEvent.DamageCause.CUSTOM, modifiers, modifierFunctions);
