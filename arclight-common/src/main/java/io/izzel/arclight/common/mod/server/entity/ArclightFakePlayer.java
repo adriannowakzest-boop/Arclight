@@ -2,6 +2,7 @@ package io.izzel.arclight.common.mod.server.entity;
 
 import com.mojang.authlib.GameProfile;
 import net.minecraft.server.level.ServerPlayer;
+import org.bukkit.Bukkit;
 import org.bukkit.craftbukkit.v.CraftServer;
 import org.bukkit.craftbukkit.v.entity.CraftPlayer;
 
@@ -19,5 +20,10 @@ public class ArclightFakePlayer extends CraftPlayer {
 
     @Override
     public void setOp(boolean value) {
+    }
+
+    @Override
+    public com.destroystokyo.paper.profile.PlayerProfile getPlayerProfile() {
+        return Bukkit.createProfile(getUniqueId(), getName());
     }
 }
