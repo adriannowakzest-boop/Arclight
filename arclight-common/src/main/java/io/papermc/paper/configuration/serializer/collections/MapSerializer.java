@@ -28,7 +28,7 @@ public class MapSerializer implements TypeSerializer<Map<?, ?>> {
 
     public static final TypeToken<Map<?, ?>> TYPE = new TypeToken<Map<?, ?>>() {};
 
-    private static final Logger LOGGER = LogUtils.getClassLogger();
+    private static final Logger LOGGER = LogUtils.getLogger();
 
     private final boolean clearInvalids;
 
