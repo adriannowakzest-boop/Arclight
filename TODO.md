@@ -12,16 +12,19 @@ Cel: rozwijać Arclight dla Minecraft 1.20.1 tak, aby na jednym serwerze działa
 - [x] Ujednolicić wersję SpongePowered Mixin na `0.8.5` w konfiguracji projektu.
 - [x] Ustawić procesor adnotacji Mixin w module wspólnym.
 - [x] Dodać repozytorium Maven PaperMC.
-- [x] Dodać zależność Paper API `1.20.1-R0.1-SNAPSHOT` do pakowania modułu wspólnego.
+- [x] Przypiąć Paper API 1.20.1 do historycznego buildu `1.20.1-R0.1-20230921.165944-178`, zgodnego z kodem serwera 1.20.1.
 - [x] Dodać osobny workflow GitHub Actions dla gałęzi PaperBridge.
 - [x] Opisać aktualny zakres i ograniczenia projektu w README.
 
 ## 1. Stabilny build i uruchamianie
 
 - [x] Uruchomić `./gradlew cleanBuild remapSpigotJar idea --no-daemon --stacktrace` na czystym środowisku Java 17 (PaperBridge CI, Java 17).
-- [x] Uruchomić `./gradlew build collect --no-daemon --stacktrace` i naprawić wszystkie błędy kompilacji (PaperBridge CI, Forge 47.4.29).
+- [x] Naprawić błędy kompilacji dla Forge 47.4.29.
+- [x] Potwierdzić lokalnie kompilację `:arclight-common:compileJava` na JDK 17 z przypiętym Paper API.
+- [ ] Uruchomić testy `:arclight-common:test` w GitHub Actions i sprawdzić wynik.
 - [ ] Potwierdzić, że Forge `1.20.1-47.4.29` rozwiązuje się z Maven i uruchamia serwer.
-- [ ] Potwierdzić, że Paper API `1.20.1-R0.1-SNAPSHOT` rozwiązuje się poprawnie i nie powoduje konfliktów zależności ze Spigot/Bukkit.
+- [x] Przypiąć wersję Paper API do dostępnego buildu zgodnego z Minecraft 1.20.1.
+- [ ] Potwierdzić w GitHub Actions, że Paper API rozwiązuje się poprawnie i nie powoduje konfliktów zależności ze Spigot/Bukkit.
 - [ ] Sprawdzić, czy pakowanie API do JAR-a nie duplikuje klas lub bibliotek dostarczanych przez Forge/Arclight.
 - [ ] Zweryfikować generowanie `mixins.arclight.refmap.json` oraz jego obecność w artefakcie.
 - [ ] Zweryfikować manifest `MixinConnector`, ładowanie konfiguracji Mixin i kolejność inicjalizacji.
@@ -36,7 +39,8 @@ Cel: rozwijać Arclight dla Minecraft 1.20.1 tak, aby na jednym serwerze działa
 - [ ] Przenieść wymagane poprawki serwera Paper bez nadpisywania istniejących poprawek Arclight.
 - [x] Przenieść bezkolizyjne klasy identyfikacyjne `com.destroystokyo.paper.PaperConfig` i `PaperWorldConfig` z patcha Paper `0005-Paper-config-files`.
 - [ ] Przenieść właściwy system konfiguracji Paper (Configurate, konfiguracja globalna/światów i integracja z cyklem życia); same klasy identyfikacyjne nie implementują konfiguracji.
-- [ ] Zaimplementować brakujące klasy i zachowania Paper API wymagane w runtime — samo dołączenie pliku Paper API do JAR-a nie wystarcza.
+- [x] Dodać brakujące adaptery Paper API wymagane do kompilacji.
+- [ ] Zweryfikować zachowanie adapterów w runtime; przejście kompilacji nie potwierdza pełnej zgodności.
 - [ ] Uzupełnić Paper-specific zachowania świata, chunków, encji, ticków i konfiguracji.
 - [ ] Uzupełnić API zdarzeń Paper i sprawdzić kolejność wywołań względem zdarzeń Bukkit oraz Forge.
 - [ ] Dodać testy zgodności API: klasy, metody, pola, wartości domyślne i zachowanie w runtime.
