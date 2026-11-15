@@ -22,7 +22,7 @@ public final class Constraints {
 
     public static final class Velocity implements Constraint<GlobalConfiguration.Proxies.Velocity> {
 
-        private static final Logger LOGGER = LogUtils.getClassLogger();
+        private static final Logger LOGGER = LogUtils.getLogger();
 
         @Override
         public void validate(final GlobalConfiguration.Proxies.@Nullable Velocity value) throws SerializationException {
