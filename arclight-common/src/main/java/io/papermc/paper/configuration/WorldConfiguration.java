@@ -52,7 +52,7 @@ import org.spongepowered.configurate.objectmapping.meta.Setting;
 
 @SuppressWarnings({"FieldCanBeLocal", "FieldMayBeFinal", "NotNullFieldNotInitialized", "InnerClassMayBeStatic"})
 public class WorldConfiguration extends ConfigurationPart {
-    private static final Logger LOGGER = LogUtils.getClassLogger();
+    private static final Logger LOGGER = LogUtils.getLogger();
     static final int CURRENT_VERSION = 30; // (when you change the version, change the comment, so it conflicts on rebases): rename filter bad nbt from spawn eggs
 
     private transient final SpigotWorldConfig spigotConfig;
