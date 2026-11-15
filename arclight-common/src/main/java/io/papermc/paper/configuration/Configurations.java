@@ -1,5 +1,7 @@
 package io.papermc.paper.configuration;
 
+import io.izzel.arclight.common.bridge.core.world.server.ServerWorldBridge;
+
 import com.mojang.logging.LogUtils;
 import io.leangen.geantyref.TypeToken;
 import io.papermc.paper.configuration.constraint.Constraint;
@@ -229,7 +231,7 @@ public abstract class Configurations<G, W> {
     }
 
     public Path getWorldConfigFile(ServerLevel level) {
-        return level.convertable.levelDirectory.path().resolve(this.worldConfigFileName);
+        return ((ServerWorldBridge) (Object) level).bridge$getWorldFolder().resolve(this.worldConfigFileName);
     }
 
     public static class ContextMap {

@@ -122,6 +122,16 @@ public abstract class ServerLevelMixin extends LevelMixin implements ServerWorld
     public ResourceKey<LevelStem> typeKey;
 
     @Override
+    public java.nio.file.Path bridge$getWorldFolder() {
+        return this.convertable.getDimensionPath(Level.OVERWORLD);
+    }
+
+    @Override
+    public SpigotWorldConfig bridge$getSpigotConfig() {
+        return this.spigotConfig;
+    }
+
+    @Override
     public ResourceKey<LevelStem> getTypeKey() {
         return this.typeKey;
     }

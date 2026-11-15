@@ -9,6 +9,11 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LightningBolt;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.storage.LevelStorageSource;
+import net.minecraft.world.level.storage.LevelStorageSource.LevelStorageAccess;
+import net.minecraft.world.level.storage.LevelStorageSource.LevelDirectory;
+import net.minecraft.world.level.Level;
+import org.spigotmc.SpigotWorldConfig;
+import java.nio.file.Path;
 
 public interface ServerWorldBridge extends WorldBridge {
 
@@ -27,4 +32,8 @@ public interface ServerWorldBridge extends WorldBridge {
     boolean bridge$addAllEntitiesSafely(Entity entity, org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason reason);
 
     LevelStorageSource.LevelStorageAccess bridge$getConvertable();
+
+    Path bridge$getWorldFolder();
+
+    SpigotWorldConfig bridge$getSpigotConfig();
 }
