@@ -3,6 +3,7 @@ package io.izzel.arclight.common.mixin.core.world.entity;
 import io.izzel.arclight.common.bridge.core.entity.EntityBridge;
 import io.izzel.arclight.common.bridge.core.entity.LivingEntityBridge;
 import io.izzel.arclight.common.bridge.core.entity.MobEntityBridge;
+import io.izzel.arclight.common.bridge.core.entity.PaperSunBurningEntityBridge;
 import io.izzel.arclight.common.bridge.core.world.WorldBridge;
 import io.izzel.arclight.common.mod.ArclightMod;
 import io.izzel.arclight.mixin.Eject;
@@ -179,12 +180,18 @@ public abstract class MobMixin extends LivingEntityMixin implements MobEntityBri
     @Inject(method = "addAdditionalSaveData", at = @At("HEAD"))
     private void arclight$setAware(CompoundTag compound, CallbackInfo ci) {
         compound.putBoolean("Bukkit.Aware", this.aware);
+        if ((Object) this instanceof PaperSunBurningEntityBridge bridge) {
+            compound.putBoolean("Paper.ShouldBurnInDay", bridge.bridge$shouldBurnInDay());
+        }
     }
 
     @Inject(method = "readAdditionalSaveData", at = @At("HEAD"))
     private void arclight$readAware(CompoundTag compound, CallbackInfo ci) {
         if (compound.contains("Bukkit.Aware")) {
             this.aware = compound.getBoolean("Bukkit.Aware");
+        }
+        if ((Object) this instanceof PaperSunBurningEntityBridge bridge && compound.contains("Paper.ShouldBurnInDay")) {
+            bridge.bridge$setShouldBurnInDay(compound.getBoolean("Paper.ShouldBurnInDay"));
         }
     }
 

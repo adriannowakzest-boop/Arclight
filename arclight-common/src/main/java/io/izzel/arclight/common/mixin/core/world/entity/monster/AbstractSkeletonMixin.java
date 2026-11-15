@@ -2,7 +2,6 @@ package io.izzel.arclight.common.mixin.core.world.entity.monster;
 
 import io.izzel.arclight.common.bridge.core.entity.EntityBridge;
 import io.izzel.arclight.common.bridge.core.entity.PaperSunBurningEntityBridge;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.Mob;
 import io.izzel.arclight.common.mixin.core.world.entity.PathfinderMobMixin;
 import net.minecraft.sounds.SoundEvents;
@@ -41,19 +40,6 @@ public abstract class AbstractSkeletonMixin extends PathfinderMobMixin implement
     private boolean arclight$respectShouldBurnInDay(Mob mob) {
         return this.arclight$shouldBurnInDay && mob.isSunBurnTick();
     }
-
-    @Inject(method = "addAdditionalSaveData", at = @At("TAIL"))
-    private void arclight$saveShouldBurnInDay(CompoundTag tag, CallbackInfo ci) {
-        tag.putBoolean("Paper.ShouldBurnInDay", this.arclight$shouldBurnInDay);
-    }
-
-    @Inject(method = "readAdditionalSaveData", at = @At("TAIL"))
-    private void arclight$loadShouldBurnInDay(CompoundTag tag, CallbackInfo ci) {
-        if (tag.contains("Paper.ShouldBurnInDay")) {
-            this.arclight$shouldBurnInDay = tag.getBoolean("Paper.ShouldBurnInDay");
-        }
-    }
-
 
     @Inject(method = "performRangedAttack", cancellable = true, locals = LocalCapture.CAPTURE_FAILHARD,
         at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/monster/AbstractSkeleton;playSound(Lnet/minecraft/sounds/SoundEvent;FF)V"))
