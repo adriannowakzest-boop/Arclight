@@ -185,7 +185,274 @@ public abstract class LivingEntityMixin extends EntityMixin implements LivingEnt
     @Shadow public abstract void setItemSlot(EquipmentSlot slotIn, ItemStack stack);
     @Shadow protected abstract void onEffectUpdated(MobEffectInstance p_147192_, boolean p_147193_, @org.jetbrains.annotations.Nullable Entity p_147194_);
     @Shadow protected abstract void onEffectAdded(MobEffectInstance p_147190_, @org.jetbrains.annotations.Nullable Entity p_147191_);
-    @Shadow public abstract void knockback(double p_147241_, d…8527 tokens truncated…apture.CAPTURE_FAILHARD, at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/Level;addFreshEntity(Lnet/minecraft/world/entity/Entity;)Z"))
+    @Shadow public abstract void knockback(double p_147241_, double p_147242_, double p_147243_);
+    @Shadow public abstract boolean canAttack(LivingEntity p_21171_);
+    @Shadow public abstract boolean hasLineOfSight(Entity p_147185_);
+    @Shadow protected abstract void hurtHelmet(DamageSource p_147213_, float p_147214_);
+    @Shadow public abstract void stopUsingItem();
+    @Shadow protected abstract boolean doesEmitEquipEvent(EquipmentSlot p_217035_);
+    @Shadow protected abstract void verifyEquippedItem(ItemStack p_181123_);
+    @Shadow public abstract boolean wasExperienceConsumed();
+    @Shadow public abstract int getExperienceReward();
+    @Shadow @Nullable protected abstract SoundEvent getHurtSound(DamageSource p_21239_);
+    @Shadow protected abstract SoundEvent getFallDamageSound(int p_21313_);
+    @Shadow protected abstract SoundEvent getDrinkingSound(ItemStack p_21174_);
+    @Shadow public abstract SoundEvent getEatingSound(ItemStack p_21202_);
+    @Shadow public abstract InteractionHand getUsedItemHand();
+    @Shadow @Final public WalkAnimationState walkAnimation;
+    @Shadow public int invulnerableDuration;
+    @Shadow public abstract void indicateDamage(double p_270514_, double p_270826_);
+    @Shadow public static EquipmentSlot getEquipmentSlotForItem(ItemStack p_147234_) { return null; }
+    @Shadow protected abstract void actuallyHurt(DamageSource p_21240_, float p_21241_);
+    @Shadow protected abstract void updateGlowingStatus();
+    // @formatter:on
+
+    public int expToDrop;
+    public boolean forceDrops;
+    public CraftAttributeMap craftAttributes;
+    public boolean collides;
+    public boolean bukkitPickUpLoot;
+    public Set<UUID> collidableExemptions = new HashSet<>();
+
+    @Redirect(method = "<init>", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/LivingEntity;setHealth(F)V"))
+    private void arclight$muteHealth(LivingEntity entity, float health) {
+        // do nothing
+    }
+
+    @Inject(method = "<init>", at = @At("RETURN"))
+    private void arclight$init(EntityType<? extends LivingEntity> type, Level worldIn, CallbackInfo ci) {
+        this.collides = true;
+        this.craftAttributes = new CraftAttributeMap(this.attributes);
+        this.entityData.set(DATA_HEALTH_ID, (float) this.getAttributeValue(Attributes.MAX_HEALTH));
+    }
+
+    public SoundEvent getHurtSound0(DamageSource damagesource) {
+        return getHurtSound(damagesource);
+    }
+
+    public SoundEvent getDeathSound0() {
+        return getDeathSound();
+    }
+
+    public SoundEvent getFallDamageSound0(int fallHeight) {
+        return getFallDamageSound(fallHeight);
+    }
+
+    public SoundEvent getDrinkingSound0(ItemStack itemstack) {
+        return getDrinkingSound(itemstack);
+    }
+
+    public SoundEvent getEatingSound0(ItemStack itemstack) {
+        return getEatingSound(itemstack);
+    }
+
+    @Redirect(method = "dropAllDeathLoot", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/LivingEntity;dropExperience()V"))
+    private void arclight$dropLater(LivingEntity livingEntity) {
+    }
+
+    @Inject(method = "dropAllDeathLoot", at = @At("RETURN"))
+    private void arclight$dropLast(DamageSource damageSourceIn, CallbackInfo ci) {
+        this.dropExperience();
+    }
+
+    /**
+     * @author IzzelAliz
+     * @reason
+     */
+    @Overwrite
+    protected void dropExperience() {
+        // if (!this.world.isRemote && (this.isPlayer() || this.recentlyHit > 0 && this.canDropLoot() && this.world.getGameRules().getBoolean(GameRules.DO_MOB_LOOT))) {
+        if (!((Object) this instanceof EnderDragon)) {
+            int reward = ForgeEventFactory.getExperienceDrop((LivingEntity) (Object) this, this.lastHurtByPlayer, this.expToDrop);
+            ExperienceOrb.award((ServerLevel) this.level(), this.position(), reward);
+            bridge$setExpToDrop(0);
+        }
+    }
+
+    private boolean isTickingEffects = false;
+    private List<Map.Entry<Either<MobEffectInstance, MobEffect>, EntityPotionEffectEvent.Cause>> effectsToProcess = Lists.newArrayList();
+
+    /**
+     * @author IzzelAliz
+     * @reason
+     */
+    @Overwrite
+    protected void tickEffects() {
+        this.isTickingEffects = true;
+        Iterator<MobEffect> iterator = this.activeEffects.keySet().iterator();
+
+        try {
+            while (iterator.hasNext()) {
+                MobEffect effect = iterator.next();
+                MobEffectInstance effectinstance = this.activeEffects.get(effect);
+                if (!effectinstance.tick((LivingEntity) (Object) this, () -> {
+                    onEffectUpdated(effectinstance, true, null);
+                })) {
+                    if (!this.level().isClientSide && !MinecraftForge.EVENT_BUS.post(new MobEffectEvent.Expired((LivingEntity) (Object) this, effectinstance))) {
+
+                        EntityPotionEffectEvent event = CraftEventFactory.callEntityPotionEffectChangeEvent((LivingEntity) (Object) this, effectinstance, null, EntityPotionEffectEvent.Cause.EXPIRATION);
+                        if (event.isCancelled()) {
+                            continue;
+                        }
+
+                        iterator.remove();
+                        this.onEffectRemoved(effectinstance);
+                    }
+                } else if (effectinstance.getDuration() % 600 == 0) {
+                    this.onEffectUpdated(effectinstance, false, null);
+                }
+            }
+        } catch (ConcurrentModificationException ignored) {
+        }
+
+        isTickingEffects = false;
+        for (Map.Entry<Either<MobEffectInstance, MobEffect>, EntityPotionEffectEvent.Cause> e : effectsToProcess) {
+            Either<MobEffectInstance, MobEffect> either = e.getKey();
+            EntityPotionEffectEvent.Cause cause = e.getValue();
+            bridge$pushEffectCause(cause);
+            if (either.left().isPresent()) {
+                addEffect(either.left().get(), cause);
+            } else {
+                removeEffect(either.right().get(), cause);
+            }
+        }
+        effectsToProcess.clear();
+
+        if (this.eff…5527 tokens truncated…eEvent.DamageModifier.BLOCKING) < 0) {
+                    if ((Object) this instanceof ServerPlayer) {
+                        CriteriaTriggers.ENTITY_HURT_PLAYER.trigger((ServerPlayer) (Object) this, damagesource, f, originalDamage, true);
+                        f2 = (float) (-event.getDamage(EntityDamageEvent.DamageModifier.BLOCKING));
+                        if (f2 > 0.0f && f2 < 3.4028235E37f) {
+                            ((ServerPlayer) (Object) this).awardStat(Stats.DAMAGE_BLOCKED_BY_SHIELD, Math.round(originalDamage * 10.0f));
+                        }
+                    }
+                    if (damagesource.getEntity() instanceof ServerPlayer) {
+                        CriteriaTriggers.PLAYER_HURT_ENTITY.trigger((ServerPlayer) damagesource.getEntity(), (Entity) (Object) this, damagesource, f, originalDamage, true);
+                    }
+
+                    return arclight$damageResult = false;
+                } else {
+                    return arclight$damageResult = originalDamage > 0;
+                }
+                // CraftBukkit end
+            }
+        }
+        return arclight$damageResult = false; // CraftBukkit
+    }
+
+    private transient EntityRegainHealthEvent.RegainReason arclight$regainReason;
+
+    public void heal(float healAmount, EntityRegainHealthEvent.RegainReason regainReason) {
+        bridge$pushHealReason(regainReason);
+        this.heal(healAmount);
+    }
+
+    @Redirect(method = "heal", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/LivingEntity;setHealth(F)V"))
+    public void arclight$healEvent(LivingEntity livingEntity, float health) {
+        EntityRegainHealthEvent.RegainReason regainReason = arclight$regainReason == null ? EntityRegainHealthEvent.RegainReason.CUSTOM : arclight$regainReason;
+        arclight$regainReason = null;
+        float f = this.getHealth();
+        float amount = health - f;
+        EntityRegainHealthEvent event = new EntityRegainHealthEvent(this.getBukkitEntity(), amount, regainReason);
+        if (this.valid) {
+            Bukkit.getPluginManager().callEvent(event);
+        }
+
+        if (!event.isCancelled()) {
+            this.setHealth(this.getHealth() + (float) event.getAmount());
+        }
+    }
+
+    @Inject(method = "heal", at = @At(value = "RETURN"))
+    public void arclight$resetReason(float healAmount, CallbackInfo ci) {
+        arclight$regainReason = null;
+    }
+
+    private transient EntityPotionEffectEvent.Cause arclight$cause;
+
+    public boolean removeEffect(MobEffect effect, EntityPotionEffectEvent.Cause cause) {
+        bridge$pushEffectCause(cause);
+        return removeEffect(effect);
+    }
+
+    @Override
+    public boolean bridge$removeEffect(MobEffect effect, EntityPotionEffectEvent.Cause cause) {
+        return removeEffect(effect, cause);
+    }
+
+    public boolean addEffect(MobEffectInstance effect, EntityPotionEffectEvent.Cause cause) {
+        bridge$pushEffectCause(cause);
+        return this.addEffect(effect, (Entity) null);
+    }
+
+    public boolean removeAllEffects(EntityPotionEffectEvent.Cause cause) {
+        bridge$pushEffectCause(cause);
+        return this.removeAllEffects();
+    }
+
+    @Override
+    public boolean bridge$removeAllEffects(EntityPotionEffectEvent.Cause cause) {
+        return removeAllEffects(cause);
+    }
+
+    public CraftLivingEntity getBukkitEntity() {
+        return (CraftLivingEntity) internal$getBukkitEntity();
+    }
+
+    @Override
+    public CraftLivingEntity bridge$getBukkitEntity() {
+        return (CraftLivingEntity) internal$getBukkitEntity();
+    }
+
+    /**
+     * @author IzzelAliz
+     * @reason
+     */
+    @Overwrite
+    private boolean checkTotemDeathProtection(DamageSource damageSourceIn) {
+        if (damageSourceIn.is(DamageTypeTags.BYPASSES_INVULNERABILITY)) {
+            return false;
+        } else {
+            net.minecraft.world.item.ItemStack itemstack = null;
+
+            net.minecraft.world.item.ItemStack itemstack1 = ItemStack.EMPTY;
+            org.bukkit.inventory.EquipmentSlot bukkitHand = null;
+            for (InteractionHand hand : InteractionHand.values()) {
+                itemstack1 = this.getItemInHand(hand);
+                if (itemstack1.is(Items.TOTEM_OF_UNDYING) && ForgeHooks.onLivingUseTotem((LivingEntity) (Object) this, damageSourceIn, itemstack1, hand)) {
+                    itemstack = itemstack1.copy();
+                    bukkitHand = CraftEquipmentSlot.getHand(hand);
+                    // itemstack1.shrink(1);
+                    break;
+                }
+            }
+
+            EntityResurrectEvent event = new EntityResurrectEvent(this.getBukkitEntity(), bukkitHand);
+            event.setCancelled(itemstack == null);
+            Bukkit.getPluginManager().callEvent(event);
+
+            if (!event.isCancelled()) {
+                if (!itemstack1.isEmpty()) {
+                    itemstack1.shrink(1);
+                }
+                if (itemstack != null && (Object) this instanceof ServerPlayer serverplayerentity) {
+                    serverplayerentity.awardStat(Stats.ITEM_USED.get(Items.TOTEM_OF_UNDYING));
+                    CriteriaTriggers.USED_TOTEM.trigger(serverplayerentity, itemstack);
+                }
+
+                this.setHealth(1.0F);
+                this.removeAllEffects(EntityPotionEffectEvent.Cause.TOTEM);
+                this.addEffect(new MobEffectInstance(MobEffects.REGENERATION, 900, 1), EntityPotionEffectEvent.Cause.TOTEM);
+                bridge$pushEffectCause(EntityPotionEffectEvent.Cause.TOTEM);
+                this.addEffect(new MobEffectInstance(MobEffects.ABSORPTION, 100, 1), EntityPotionEffectEvent.Cause.TOTEM);
+                this.addEffect(new MobEffectInstance(MobEffects.FIRE_RESISTANCE, 800, 1), EntityPotionEffectEvent.Cause.TOTEM);
+                this.level().broadcastEntityEvent((Entity) (Object) this, (byte) 35);
+            }
+            return !event.isCancelled();
+        }
+    }
+
+    @Inject(method = "createWitherRose", cancellable = true, locals = LocalCapture.CAPTURE_FAILHARD, at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/Level;addFreshEntity(Lnet/minecraft/world/entity/Entity;)Z"))
     private void arclight$witherRoseDrop(LivingEntity livingEntity, CallbackInfo ci, boolean flag, ItemEntity
         itemEntity) {
         org.bukkit.event.entity.EntityDropItemEvent event = new org.bukkit.event.entity.EntityDropItemEvent(this.getBukkitEntity(), (org.bukkit.entity.Item) (((EntityBridge) itemEntity).bridge$getBukkitEntity()));

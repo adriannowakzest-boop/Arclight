@@ -1,6 +1,3 @@
-Warning: truncated output (original token count: 5875)
-Total output lines: 530
-
 package io.papermc.paper.configuration;
 
 import com.google.common.collect.HashBasedTable;
@@ -217,7 +214,68 @@ public class WorldConfiguration extends ConfigurationPart {
             }
         }
 
-        p…875 tokens truncated…fPigmenFromNetherPortals = false;
+        public Behavior behavior;
+
+        public class Behavior extends ConfigurationPart {
+            public boolean disableChestCatDetection = false;
+            public boolean spawnerNerfedMobsShouldJump = false;
+            public int experienceMergeMaxValue = -1;
+            public boolean shouldRemoveDragon = false;
+            public boolean zombiesTargetTurtleEggs = true;
+            public boolean piglinsGuardChests = true;
+            public double babyZombieMovementModifier = 0.5;
+            public boolean allowSpiderWorldBorderClimbing = true;
+            public DoorBreakingDifficulty doorBreakingDifficulty;
+
+            public class DoorBreakingDifficulty extends ConfigurationPart { // TODO convert to map at some point
+                public List<Difficulty> zombie = Arrays.stream(Difficulty.values()).filter(difficulty -> difficulty == Difficulty.HARD).toList();
+                public List<Difficulty> husk = Arrays.stream(Difficulty.values()).filter(difficulty -> difficulty == Difficulty.HARD).toList();
+                @Setting("zombie_villager")
+                public List<Difficulty> zombieVillager = Arrays.stream(Difficulty.values()).filter(difficulty -> difficulty == Difficulty.HARD).toList();
+                @Setting("zombified_piglin")
+                public List<Difficulty> zombified_piglin = Arrays.stream(Difficulty.values()).filter(difficulty -> difficulty == Difficulty.HARD).toList();
+                public List<Difficulty> vindicator = Arrays.stream(Difficulty.values()).filter(difficulty -> difficulty == Difficulty.HARD).toList();
+
+                // TODO remove when this becomes a proper map
+                public List<Difficulty> get(EntityType<?> type) {
+                    return this.getOrDefault(type, null);
+                }
+
+                public List<Difficulty> getOrDefault(EntityType<?> type, List<Difficulty> fallback) {
+                    if (type == EntityType.ZOMBIE) {
+                        return this.zombie;
+                    } else if (type == EntityType.HUSK) {
+                        return this.husk;
+                    } else if (type == EntityType.ZOMBIE_VILLAGER) {
+                        return this.zombieVillager;
+                    } else if (type == EntityType.ZOMBIFIED_PIGLIN) {
+                        return this.zombified_piglin;
+                    } else if (type == EntityType.VINDICATOR) {
+                        return this.vindicator;
+                    } else {
+                        return fallback;
+                    }
+                }
+            }
+
+            public boolean disableCreeperLingeringEffect = false;
+            public boolean enderDragonsDeathAlwaysPlacesDragonEgg = false;
+            public boolean phantomsDoNotSpawnOnCreativePlayers = true;
+            public boolean phantomsOnlyAttackInsomniacs = true;
+            public int playerInsomniaStartTicks = 72000;
+            public int phantomsSpawnAttemptMinSeconds = 60;
+            public int phantomsSpawnAttemptMaxSeconds = 119;
+            public boolean parrotsAreUnaffectedByPlayerMovement = false;
+            public double zombieVillagerInfectionChance = -1.0;
+            public MobsCanAlwaysPickUpLoot mobsCanAlwaysPickUpLoot;
+
+            public class MobsCanAlwaysPickUpLoot extends ConfigurationPart {
+                public boolean zombies = false;
+                public boolean skeletons = false;
+            }
+
+            public boolean disablePlayerCrits = false;
+            public boolean nerfPigmenFromNetherPortals = false;
             public PillagerPatrols pillagerPatrols;
 
             public class PillagerPatrols extends ConfigurationPart {

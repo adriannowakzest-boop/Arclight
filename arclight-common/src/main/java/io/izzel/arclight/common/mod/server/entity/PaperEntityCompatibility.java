@@ -18,6 +18,7 @@ import org.bukkit.entity.Player;
 
 final class PaperEntityCompatibility {
     private static final java.util.Map<net.minecraft.world.entity.LivingEntity, Integer> SHIELD_DELAYS = new WeakHashMap<>();
+    private static final java.util.Map<net.minecraft.world.entity.LivingEntity, Integer> STINGER_DELAYS = new WeakHashMap<>();
     private PaperEntityCompatibility() {}
 
     static synchronized int getShieldBlockingDelay(net.minecraft.world.entity.LivingEntity entity) {
@@ -26,6 +27,8 @@ final class PaperEntityCompatibility {
     static synchronized void setShieldBlockingDelay(net.minecraft.world.entity.LivingEntity entity, int delay) {
         SHIELD_DELAYS.put(entity, Math.max(0, delay));
     }
+    static synchronized int getBeeStingerCooldown(net.minecraft.world.entity.LivingEntity entity) { return STINGER_DELAYS.getOrDefault(entity, 0); }
+    static synchronized void setBeeStingerCooldown(net.minecraft.world.entity.LivingEntity entity, int ticks) { STINGER_DELAYS.put(entity, Math.max(0, ticks)); }
     static boolean fromMobSpawner(Entity entity) { return false; }
     static Location getOrigin(Entity entity) { return null; }
     static boolean hasLineOfSight(net.minecraft.world.entity.LivingEntity entity, Location location) {
@@ -36,9 +39,34 @@ final class PaperEntityCompatibility {
             net.minecraft.world.level.ClipContext.Block.COLLIDER, net.minecraft.world.level.ClipContext.Fluid.NONE, entity)).getType()
             == net.minecraft.world.phys.HitResult.Type.MISS;
     }
+    static org.bukkit.block.BlockFace getTargetBlockFace(net.minecraft.world.entity.LivingEntity entity, int distance, org.bukkit.FluidCollisionMode mode) {
+        net.minecraft.world.phys.Vec3 start = entity.getEyePosition();
+        net.minecraft.world.phys.Vec3 end = start.add(entity.getViewVector(1.0F).scale(distance));
+        net.minecraft.world.level.ClipContext.Fluid fluid = mode == org.bukkit.FluidCollisionMode.ALWAYS
+            ? net.minecraft.world.level.ClipContext.Fluid.ANY : net.minecraft.world.level.ClipContext.Fluid.NONE;
+        net.minecraft.world.phys.HitResult hit = entity.level().clip(new net.minecraft.world.level.ClipContext(start, end,
+            net.minecraft.world.level.ClipContext.Block.COLLIDER, fluid, entity));
+        return hit instanceof net.minecraft.world.phys.BlockHitResult
+            ? org.bukkit.craftbukkit.v.block.CraftBlock.notchToBlockFace(((net.minecraft.world.phys.BlockHitResult) hit).getDirection()) : null;
+    }
+    static org.bukkit.block.Block getTargetBlock(net.minecraft.world.entity.LivingEntity entity, int distance, org.bukkit.FluidCollisionMode mode) {
+        net.minecraft.world.phys.Vec3 start = entity.getEyePosition();
+        net.minecraft.world.phys.Vec3 end = start.add(entity.getViewVector(1.0F).scale(distance));
+        net.minecraft.world.level.ClipContext.Fluid fluid = mode == org.bukkit.FluidCollisionMode.ALWAYS
+            ? net.minecraft.world.level.ClipContext.Fluid.ANY : net.minecraft.world.level.ClipContext.Fluid.NONE;
+        net.minecraft.world.phys.HitResult hit = entity.level().clip(new net.minecraft.world.level.ClipContext(start, end,
+            net.minecraft.world.level.ClipContext.Block.COLLIDER, fluid, entity));
+        if (!(hit instanceof net.minecraft.world.phys.BlockHitResult) || hit.getType() == net.minecraft.world.phys.HitResult.Type.MISS) return null;
+        net.minecraft.core.BlockPos pos = ((net.minecraft.world.phys.BlockHitResult) hit).getBlockPos();
+        return ((io.izzel.arclight.common.bridge.core.entity.EntityBridge) (Object) entity).bridge$getBukkitEntity().getWorld().getBlockAt(pos.getX(), pos.getY(), pos.getZ());
+    }
     static boolean clearActivePotionEffects(net.minecraft.world.entity.LivingEntity entity) { return entity.removeAllEffects(); }
     static void setPose(Entity entity, org.bukkit.entity.Pose pose) {
         entity.setPose(net.minecraft.world.entity.Pose.valueOf(pose.name()));
+    }
+    static void setArrowsInBody(net.minecraft.world.entity.LivingEntity entity, int count) { entity.setArrowCount(Math.max(0, count)); }
+    static org.bukkit.util.RayTraceResult rayTraceEntities(net.minecraft.world.entity.LivingEntity entity, int maxDistance, boolean ignoreBlocks) {
+        return null;
     }
 
     static boolean wouldCollide(Entity entity, BoundingBox box) {

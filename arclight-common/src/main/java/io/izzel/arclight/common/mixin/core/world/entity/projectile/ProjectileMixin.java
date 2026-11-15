@@ -19,6 +19,8 @@ import javax.annotation.Nullable;
 
 @Mixin(Projectile.class)
 public abstract class ProjectileMixin extends EntityMixin {
+    @Shadow private boolean hasBeenShot;
+    @Shadow private boolean leftOwner;
 
     // @formatter:off
     @Shadow @Nullable public abstract Entity getOwner();
@@ -51,4 +53,12 @@ public abstract class ProjectileMixin extends EntityMixin {
             this.onHit(hitResult);
         }
     }
+
+    public void arclight$invokePreOnHit(HitResult hitResult) { this.preOnHit(hitResult); }
+    public boolean arclight$canHitEntity(Entity entity) { return this.canHitEntity(entity); }
+    public void arclight$setHasBeenShot(boolean value) { this.hasBeenShot = value; }
+    public boolean arclight$hasBeenShot() { return this.hasBeenShot; }
+    public void arclight$setHasLeftShooter(boolean value) { this.leftOwner = value; }
+    public boolean arclight$hasLeftShooter() { return this.leftOwner; }
+    @Shadow protected abstract boolean canHitEntity(Entity entity);
 }
