@@ -1,6 +1,3 @@
-Warning: truncated output (original token count: 13527)
-Total output lines: 1160
-
 package io.izzel.arclight.common.mixin.core.world.entity;
 
 import com.google.common.base.Function;
@@ -318,7 +315,510 @@ public abstract class LivingEntityMixin extends EntityMixin implements LivingEnt
         }
         effectsToProcess.clear();
 
-        if (this.eff…5527 tokens truncated…eEvent.DamageModifier.BLOCKING) < 0) {
+        if (this.effectsDirty) {
+            if (!this.level().isClientSide) {
+                this.updateInvisibilityStatus();
+                this.updateGlowingStatus();
+            }
+
+            this.effectsDirty = false;
+        }
+
+        int i = this.entityData.get(DATA_EFFECT_COLOR_ID);
+        boolean flag1 = this.entityData.get(DATA_EFFECT_AMBIENCE_ID);
+        if (i > 0) {
+            boolean flag;
+            if (this.isInvisible()) {
+                flag = this.random.nextInt(15) == 0;
+            } else {
+                flag = this.random.nextBoolean();
+            }
+
+            if (flag1) {
+                flag &= this.random.nextInt(5) == 0;
+            }
+
+            if (flag && i > 0) {
+                double d0 = (double) (i >> 16 & 255) / 255.0D;
+                double d1 = (double) (i >> 8 & 255) / 255.0D;
+                double d2 = (double) (i >> 0 & 255) / 255.0D;
+                this.level().addParticle(flag1 ? ParticleTypes.AMBIENT_ENTITY_EFFECT : ParticleTypes.ENTITY_EFFECT, this.getX() + (this.random.nextDouble() - 0.5D) * (double) this.getBbWidth(), this.getY() + this.random.nextDouble() * (double) this.getBbHeight(), this.getZ() + (this.random.nextDouble() - 0.5D) * (double) this.getBbWidth(), d0, d1, d2);
+            }
+        }
+    }
+
+    /**
+     * @author IzzelAliz
+     * @reason
+     */
+    @Overwrite
+    public boolean addEffect(MobEffectInstance effectInstanceIn, Entity entity) {
+        EntityPotionEffectEvent.Cause cause = bridge$getEffectCause().orElse(EntityPotionEffectEvent.Cause.UNKNOWN);
+        if (isTickingEffects) {
+            effectsToProcess.add(Maps.immutableEntry(Either.left(effectInstanceIn), cause));
+            return true;
+        }
+
+        if (!this.canBeAffected(effectInstanceIn)) {
+            return false;
+        } else {
+            MobEffectInstance effectinstance = this.activeEffects.get(effectInstanceIn.getEffect());
+
+            boolean override = false;
+            if (effectinstance != null) {
+                override = new MobEffectInstance(effectinstance).update(effectInstanceIn);
+            }
+
+            EntityPotionEffectEvent event = CraftEventFactory.callEntityPotionEffectChangeEvent((LivingEntity) (Object) this, effectinstance, effectInstanceIn, cause, override);
+            if (event.isCancelled()) {
+                return false;
+            }
+
+            MinecraftForge.EVENT_BUS.post(new MobEffectEvent.Added((LivingEntity) (Object) this, effectinstance, effectInstanceIn, entity));
+            if (effectinstance == null) {
+                this.activeEffects.put(effectInstanceIn.getEffect(), effectInstanceIn);
+                this.onEffectAdded(effectInstanceIn, entity);
+                return true;
+            } else if (event.isOverride()) {
+                effectinstance.update(effectInstanceIn);
+                this.onEffectUpdated(effectinstance, true, entity);
+                return true;
+            } else {
+                return false;
+            }
+        }
+    }
+
+    @SuppressWarnings("unused") // mock
+    public MobEffectInstance c(@Nullable MobEffect potioneffectin, EntityPotionEffectEvent.Cause cause) {
+        bridge$pushEffectCause(cause);
+        return removeEffectNoUpdate(potioneffectin);
+    }
+
+    @Inject(method = "removeEffectNoUpdate", cancellable = true, at = @At("HEAD"))
+    public void arclight$clearActive(MobEffect effect, CallbackInfoReturnable<MobEffectInstance> cir) {
+        EntityPotionEffectEvent.Cause cause = bridge$getEffectCause().orElse(EntityPotionEffectEvent.Cause.UNKNOWN);
+        if (isTickingEffects) {
+            effectsToProcess.add(Maps.immutableEntry(Either.right(effect), cause));
+            cir.setReturnValue(null);
+            return;
+        }
+
+        MobEffectInstance effectInstance = this.activeEffects.get(effect);
+        if (effectInstance == null) {
+            cir.setReturnValue(null);
+            return;
+        }
+
+        EntityPotionEffectEvent event = CraftEventFactory.callEntityPotionEffectChangeEvent((LivingEntity) (Object) this, effectInstance, null, cause);
+        if (event.isCancelled()) {
+            cir.setReturnValue(null);
+        }
+    }
+
+    @Override
+    public boolean bridge$canPickUpLoot() {
+        return bukkitPickUpLoot;
+    }
+
+    @Override
+    public float getBukkitYaw() {
+        return getYHeadRot();
+    }
+
+    public int getExpReward() {
+        if (this.level() instanceof ServerLevel && !this.wasExperienceConsumed() && (this.isAlwaysExperienceDropper() || this.lastHurtByPlayerTime > 0 && this.shouldDropExperience() && this.level().getGameRules().getBoolean(GameRules.RULE_DOMOBLOOT))) {
+            int exp = this.getExperienceReward();
+            return ForgeEventFactory.getExperienceDrop((LivingEntity) (Object) this, this.lastHurtByPlayer, exp);
+        } else {
+            return 0;
+        }
+    }
+
+    @Override
+    public int bridge$getExpReward() {
+        return getExpReward();
+    }
+
+    @Override
+    public void bridge$setExpToDrop(int amount) {
+        this.expToDrop = amount;
+    }
+
+    @Override
+    public int bridge$getExpToDrop() {
+        return this.expToDrop;
+    }
+
+    @Override
+    public boolean bridge$isForceDrops() {
+        return forceDrops;
+    }
+
+    @Inject(method = "readAdditionalSaveData", at = @At("HEAD"))
+    public void arclight$readMaxHealth(CompoundTag compound, CallbackInfo ci) {
+        if (compound.contains("Bukkit.MaxHealth")) {
+            Tag nbtbase = compound.get("Bukkit.MaxHealth");
+            if (nbtbase.getId() == 5) {
+                this.getAttribute(Attributes.MAX_HEALTH).setBaseValue(((FloatTag) nbtbase).getAsDouble());
+            } else if (nbtbase.getId() == 3) {
+                this.getAttribute(Attributes.MAX_HEALTH).setBaseValue(((IntTag) nbtbase).getAsDouble());
+            }
+        }
+    }
+
+    @Inject(method = "removeAllEffects", at = @At(value = "INVOKE", remap = false, target = "Lnet/minecraftforge/eventbus/api/IEventBus;post(Lnet/minecraftforge/eventbus/api/Event;)Z"))
+    public void arclight$clearReason(CallbackInfoReturnable<Boolean> cir) {
+        arclight$action = EntityPotionEffectEvent.Action.CLEARED;
+    }
+
+    private transient EntityPotionEffectEvent.Action arclight$action;
+
+    @Override
+    public EntityPotionEffectEvent.Action bridge$getAndResetAction() {
+        try {
+            return arclight$action;
+        } finally {
+            arclight$action = null;
+        }
+    }
+
+    /**
+     * @author IzzelAliz
+     * @reason
+     */
+    @Overwrite
+    public boolean isAlive() {
+        return !this.isRemoved() && this.entityData.get(DATA_HEALTH_ID) > 0.0F;
+    }
+
+    @Inject(method = "getHealth", cancellable = true, at = @At("HEAD"))
+    public void arclight$scaledHealth(CallbackInfoReturnable<Float> cir) {
+        if (this instanceof ServerPlayerEntityBridge && ((ServerPlayerEntityBridge) this).bridge$initialized()) {
+            cir.setReturnValue((float) ((ServerPlayerEntityBridge) this).bridge$getBukkitEntity().getHealth());
+        }
+    }
+
+    @Inject(method = "setHealth", cancellable = true, at = @At("HEAD"))
+    public void arclight$setScaled(float health, CallbackInfo ci) {
+        if (this instanceof ServerPlayerEntityBridge && ((ServerPlayerEntityBridge) this).bridge$initialized()) {
+            CraftPlayer player = ((ServerPlayerEntityBridge) this).bridge$getBukkitEntity();
+
+            double realHealth = Mth.clamp(health, 0.0F, player.getMaxHealth());
+            player.setRealHealth(realHealth);
+
+            player.updateScaledHealth(false);
+            player.setRealHealth(realHealth);
+            ci.cancel();
+        }
+    }
+
+    /**
+     * @author IzzelAliz
+     * @reason
+     */
+    @Overwrite
+    public boolean hurt(DamageSource source, float amount) {
+        if (!ForgeHooks.onLivingAttack((LivingEntity) (Object) this, source, amount)) return false;
+        if (this.isInvulnerableTo(source)) {
+            return false;
+        } else if (this.level().isClientSide) {
+            return false;
+        } else if (this.dead || this.isRemoved() || this.isDeadOrDying()) {
+            return false;
+        } else if (source.is(DamageTypeTags.IS_FIRE) && this.hasEffect(MobEffects.FIRE_RESISTANCE)) {
+            return false;
+        } else {
+            if (this.isSleeping() && !this.level().isClientSide) {
+                this.stopSleeping();
+            }
+
+            this.noActionTime = 0;
+            float f = amount;
+            boolean flag = f > 0.0F && this.isDamageSourceBlocked(source); // Copied from below
+            float f1 = 0.0F;
+            // ShieldBlockEvent implemented in damageEntity0
+
+            if (false && amount > 0.0F && this.isDamageSourceBlocked(source)) {
+                this.hurtCurrentlyUsedShield(amount);
+                f1 = amount;
+                amount = 0.0F;
+                if (!source.is(DamageTypeTags.IS_PROJECTILE)) {
+                    Entity entity = source.getDirectEntity();
+                    if (entity instanceof LivingEntity) {
+                        this.blockUsingShield((LivingEntity) entity);
+                    }
+                }
+
+                flag = true;
+            }
+
+            if (source.is(DamageTypeTags.IS_FREEZING) && this.getType().is(EntityTypeTags.FREEZE_HURTS_EXTRA_TYPES)) {
+                f *= 5.0F;
+            }
+
+            this.walkAnimation.setSpeed(1.5F);
+            boolean flag1 = true;
+            if ((float) this.invulnerableTime > (float) this.invulnerableDuration / 2.0F && !source.is(DamageTypeTags.BYPASSES_COOLDOWN)) {
+                if (amount <= this.lastHurt) {
+                    return false;
+                }
+
+                this.actuallyHurt(source, amount - this.lastHurt);
+                if (!arclight$damageResult) {
+                    return false;
+                }
+                this.lastHurt = amount;
+                flag1 = false;
+            } else {
+                this.actuallyHurt(source, amount);
+                if (!arclight$damageResult) {
+                    return false;
+                }
+                this.lastHurt = amount;
+                this.invulnerableTime = 20;
+                this.hurtDuration = 10;
+                this.hurtTime = this.hurtDuration;
+            }
+
+            if ((Object) this instanceof Animal) {
+                ((Animal) (Object) this).resetLove();
+                if ((Object) this instanceof TamableAnimal) {
+                    ((TamableAnimal) (Object) this).setOrderedToSit(false);
+                }
+            }
+
+            Entity entity1 = source.getEntity();
+            if (entity1 != null) {
+                if (entity1 instanceof LivingEntity && !source.is(DamageTypeTags.NO_ANGER)) {
+                    this.setLastHurtByMob((LivingEntity) entity1);
+                }
+
+                if (entity1 instanceof net.minecraft.world.entity.player.Player) {
+                    this.lastHurtByPlayerTime = 100;
+                    this.lastHurtByPlayer = (net.minecraft.world.entity.player.Player) entity1;
+                } else if (entity1 instanceof TamableAnimal wolfentity) {
+                    if (wolfentity.isTame()) {
+                        this.lastHurtByPlayerTime = 100;
+                        LivingEntity livingentity = wolfentity.getOwner();
+                        if (livingentity instanceof net.minecraft.world.entity.player.Player) {
+                            this.lastHurtByPlayer = (net.minecraft.world.entity.player.Player) livingentity;
+                        } else {
+                            this.lastHurtByPlayer = null;
+                        }
+                    }
+                }
+            }
+
+            if (flag1) {
+                if (flag) {
+                    this.level().broadcastEntityEvent((LivingEntity) (Object) this, (byte) 29);
+                } else {
+                    this.level().broadcastDamageEvent((LivingEntity) (Object) this, source);
+                }
+
+                if (!source.is(DamageTypeTags.NO_IMPACT) && (!flag || amount > 0.0F)) {
+                    this.markHurt();
+                }
+
+                if (entity1 != null && !source.is(DamageTypeTags.IS_EXPLOSION)) {
+                    double d1 = entity1.getX() - this.getX();
+
+                    double d0;
+                    for (d0 = entity1.getZ() - this.getZ(); d1 * d1 + d0 * d0 < 1.0E-4D; d0 = (Math.random() - Math.random()) * 0.01D) {
+                        d1 = (Math.random() - Math.random()) * 0.01D;
+                    }
+
+                    this.knockback(0.4F, d1, d0);
+                    if (!flag) {
+                        this.indicateDamage(d1, d0);
+                    }
+                }
+            }
+
+            if (this.isDeadOrDying()) {
+                if (!this.checkTotemDeathProtection(source)) {
+                    SoundEvent soundevent = this.getDeathSound();
+                    if (flag1 && soundevent != null) {
+                        this.playSound(soundevent, this.getSoundVolume(), this.getVoicePitch());
+                    }
+
+                    this.die(source);
+                }
+            } else if (flag1) {
+                this.playHurtSound(source);
+            }
+
+            boolean flag2 = !flag || amount > 0.0F;
+            if (flag2) {
+                this.lastDamageSource = source;
+                this.lastDamageStamp = this.level().getGameTime();
+            }
+
+            if ((Object) this instanceof ServerPlayer) {
+                CriteriaTriggers.ENTITY_HURT_PLAYER.trigger((ServerPlayer) (Object) this, source, f, amount, flag);
+                if (f1 > 0.0F && f1 < 3.4028235E37F) {
+                    ((ServerPlayer) (Object) this).awardStat(Stats.DAMAGE_BLOCKED_BY_SHIELD, Math.round(f1 * 10.0F));
+                }
+            }
+
+            if (entity1 instanceof ServerPlayer) {
+                CriteriaTriggers.PLAYER_HURT_ENTITY.trigger((ServerPlayer) entity1, (LivingEntity) (Object) this, source, f, amount, flag);
+            }
+
+            return flag2;
+        }
+    }
+
+    @Inject(method = "actuallyHurt", cancellable = true, at = @At("HEAD"))
+    public void arclight$redirectDamageEntity(DamageSource damageSrc, float damageAmount, CallbackInfo ci) {
+        damageEntity0(damageSrc, damageAmount);
+        ci.cancel();
+    }
+
+    private transient boolean arclight$damageResult;
+
+    protected boolean damageEntity0(DamageSource damagesource, float f) {
+        if (!this.isInvulnerableTo(damagesource)) {
+            final boolean human = (Object) this instanceof net.minecraft.world.entity.player.Player;
+
+            f = net.minecraftforge.common.ForgeHooks.onLivingHurt((LivingEntity) (Object) this, damagesource, f);
+            if (f <= 0) return arclight$damageResult = true;
+
+            float originalDamage = f;
+            Function<Double, Double> hardHat = f12 -> {
+                if (damagesource.is(DamageTypeTags.DAMAGES_HELMET) && !this.getItemBySlot(EquipmentSlot.HEAD).isEmpty()) {
+                    return -(f12 - (f12 * 0.75F));
+                }
+                return -0.0;
+            };
+            float hardHatModifier = hardHat.apply((double) f).floatValue();
+            f += hardHatModifier;
+
+            Function<Double, Double> blocking;
+            var shieldTakesDamage = false;
+            if (this.isDamageSourceBlocked(damagesource)) {
+                var shieldEvent = ForgeHooks.onShieldBlock((LivingEntity) (Object) this, damagesource, f);
+                if (!shieldEvent.isCanceled()) {
+                    var blocked = shieldEvent.getBlockedDamage();
+                    shieldTakesDamage = shieldEvent.shieldTakesDamage();
+                    blocking = f13 -> -(double) blocked;
+                } else {
+                    blocking = f13 -> 0d;
+                }
+            } else {
+                blocking = f13 -> 0d;
+            }
+            float blockingModifier = blocking.apply((double) f).floatValue();
+            f += blockingModifier;
+
+            Function<Double, Double> armor = f14 -> -(f14 - this.getDamageAfterArmorAbsorb(damagesource, f14.floatValue()));
+            float armorModifier = armor.apply((double) f).floatValue();
+            f += armorModifier;
+
+            Function<Double, Double> resistance = f15 -> {
+                if (!damagesource.is(DamageTypeTags.BYPASSES_EFFECTS) && this.hasEffect(MobEffects.DAMAGE_RESISTANCE) && !damagesource.is(DamageTypeTags.BYPASSES_RESISTANCE)) {
+                    int i = (this.getEffect(MobEffects.DAMAGE_RESISTANCE).getAmplifier() + 1) * 5;
+                    int j = 25 - i;
+                    float f1 = f15.floatValue() * (float) j;
+                    return -(f15 - (f1 / 25.0F));
+                }
+                return -0.0;
+            };
+            float resistanceModifier = resistance.apply((double) f).floatValue();
+            f += resistanceModifier;
+
+            Function<Double, Double> magic = f16 -> -(f16 - this.getDamageAfterMagicAbsorb(damagesource, f16.floatValue()));
+            float magicModifier = magic.apply((double) f).floatValue();
+            f += magicModifier;
+
+            Function<Double, Double> absorption = f17 -> -(Math.max(f17 - Math.max(f17 - this.getAbsorptionAmount(), 0.0F), 0.0F));
+            float absorptionModifier = absorption.apply((double) f).floatValue();
+
+            EntityDamageEvent event = CraftEventFactory.handleLivingEntityDamageEvent((LivingEntity) (Object) this, damagesource, originalDamage, hardHatModifier, blockingModifier, armorModifier, resistanceModifier, magicModifier, absorptionModifier, hardHat, blocking, armor, resistance, magic, absorption);
+            if (damagesource.getEntity() instanceof net.minecraft.world.entity.player.Player) {
+                ((net.minecraft.world.entity.player.Player) damagesource.getEntity()).resetAttackStrengthTicker();
+            }
+
+            if (event.isCancelled()) {
+                return arclight$damageResult = false;
+            }
+
+            f = (float) event.getFinalDamage();
+
+            // Resistance
+            if (event.getDamage(EntityDamageEvent.DamageModifier.RESISTANCE) < 0) {
+                float f3 = (float) -event.getDamage(EntityDamageEvent.DamageModifier.RESISTANCE);
+                if (f3 > 0.0F && f3 < 3.4028235E37F) {
+                    if ((Object) this instanceof ServerPlayer) {
+                        ((ServerPlayer) (Object) this).awardStat(Stats.DAMAGE_RESISTED, Math.round(f3 * 10.0F));
+                    } else if (damagesource.getEntity() instanceof ServerPlayer) {
+                        ((ServerPlayer) damagesource.getEntity()).awardStat(Stats.DAMAGE_DEALT_RESISTED, Math.round(f3 * 10.0F));
+                    }
+                }
+            }
+
+            // Apply damage to helmet
+            if (damagesource.is(DamageTypeTags.DAMAGES_HELMET) && !this.getItemBySlot(EquipmentSlot.HEAD).isEmpty()) {
+                this.hurtHelmet(damagesource, f);
+            }
+
+            // Apply damage to armor
+            if (!damagesource.is(DamageTypeTags.BYPASSES_ARMOR)) {
+                float armorDamage = (float) (event.getDamage() + event.getDamage(EntityDamageEvent.DamageModifier.BLOCKING) + event.getDamage(EntityDamageEvent.DamageModifier.HARD_HAT));
+                this.hurtArmor(damagesource, armorDamage);
+            }
+
+            // Apply blocking code // PAIL: steal from above
+            if (event.getDamage(EntityDamageEvent.DamageModifier.BLOCKING) < 0) {
+                this.level().broadcastEntityEvent((Entity) (Object) this, (byte) 29); // SPIGOT-4635 - shield damage sound
+                if (shieldTakesDamage) {
+                    this.hurtCurrentlyUsedShield((float) -event.getDamage(EntityDamageEvent.DamageModifier.BLOCKING));
+                }
+                Entity entity = damagesource.getDirectEntity();
+
+                if (entity instanceof LivingEntity) {
+                    this.blockUsingShield(((LivingEntity) entity));
+                }
+            }
+
+            absorptionModifier = (float) -event.getDamage(EntityDamageEvent.DamageModifier.ABSORPTION);
+            this.setAbsorptionAmount(Math.max(this.getAbsorptionAmount() - absorptionModifier, 0.0F));
+            float f2 = absorptionModifier;
+
+            if (f2 > 0.0F && f2 < 3.4028235E37F && (Object) this instanceof net.minecraft.world.entity.player.Player) {
+                ((net.minecraft.world.entity.player.Player) (Object) this).awardStat(Stats.DAMAGE_ABSORBED, Math.round(f2 * 10.0F));
+            }
+            if (f2 > 0.0F && f2 < 3.4028235E37F && damagesource.getEntity() instanceof net.minecraft.world.entity.player.Player) {
+                ((net.minecraft.world.entity.player.Player) damagesource.getEntity()).awardStat(Stats.DAMAGE_DEALT_ABSORBED, Math.round(f2 * 10.0F));
+            }
+
+            f = net.minecraftforge.common.ForgeHooks.onLivingDamage((LivingEntity) (Object) this, damagesource, f);
+
+            if (f > 0 || !human) {
+                if (human) {
+                    // PAIL: Be sure to drag all this code from the EntityHuman subclass each update.
+                    ((PlayerEntityBridge) this).bridge$pushExhaustReason(EntityExhaustionEvent.ExhaustionReason.DAMAGED);
+                    ((net.minecraft.world.entity.player.Player) (Object) this).causeFoodExhaustion(damagesource.getFoodExhaustion());
+                    if (f < 3.4028235E37F) {
+                        ((net.minecraft.world.entity.player.Player) (Object) this).awardStat(Stats.DAMAGE_TAKEN, Math.round(f * 10.0F));
+                    }
+                }
+                // CraftBukkit end
+                float f3 = this.getHealth();
+
+                this.getCombatTracker().recordDamage(damagesource, f);
+                this.setHealth(f3 - f); // Forge: moved to fix MC-121048
+                // CraftBukkit start
+                if (!human) {
+                    this.setAbsorptionAmount(this.getAbsorptionAmount() - f);
+                }
+                this.gameEvent(GameEvent.ENTITY_DAMAGE, damagesource.getEntity());
+
+                return arclight$damageResult = true;
+            } else {
+                // Duplicate triggers if blocking
+                if (event.getDamage(EntityDamageEvent.DamageModifier.BLOCKING) < 0) {
                     if ((Object) this instanceof ServerPlayer) {
                         CriteriaTriggers.ENTITY_HURT_PLAYER.trigger((ServerPlayer) (Object) this, damagesource, f, originalDamage, true);
                         f2 = (float) (-event.getDamage(EntityDamageEvent.DamageModifier.BLOCKING));
