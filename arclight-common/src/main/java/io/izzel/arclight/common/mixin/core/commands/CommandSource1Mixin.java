@@ -39,6 +39,11 @@ public class CommandSource1Mixin implements ICommandSourceBridge {
             public String getName() {
                 return "NULL";
             }
+
+            @Override
+            public @NotNull net.kyori.adventure.text.Component name() {
+                return net.kyori.adventure.text.Component.text(getName());
+            }
         };
     }
 

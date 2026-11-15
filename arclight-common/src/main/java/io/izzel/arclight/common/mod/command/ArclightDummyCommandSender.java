@@ -87,6 +87,11 @@ public class ArclightDummyCommandSender extends ArclightDummyPermissible impleme
     }
 
     @Override
+    public @NotNull net.kyori.adventure.text.Component name() {
+        return net.kyori.adventure.text.Component.text(getName());
+    }
+
+    @Override
     public @NotNull Spigot spigot() {
         if (spigot != null) {
             return spigot;
