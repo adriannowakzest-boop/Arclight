@@ -9,4 +9,8 @@ public class ArclightModMob extends CraftMob {
     public ArclightModMob(CraftServer server, Mob entity) {
         super(server, entity);
     }
+    @Override
+    public int getPossibleExperienceReward() {
+        return getHandle().getExperienceReward();
+    }
 }

@@ -9,4 +9,8 @@ public class ArclightModProjectile extends CraftProjectile {
     public ArclightModProjectile(CraftServer server, Projectile entity) {
         super(server, entity);
     }
+    @Override
+    public String getScoreboardEntryName() {
+        return getHandle().getScoreboardName();
+    }
 }
