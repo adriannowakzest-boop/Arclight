@@ -185,7 +185,7 @@ public class GlobalConfiguration extends ConfigurationPart {
 
         @Override
         public void postProcess() {
-            io.papermc.paper.chunk.system.scheduling.ChunkTaskScheduler.init(this);
+            // The asynchronous chunk scheduler is not part of the Minecraft 1.20.1 runtime.
         }
     }
 

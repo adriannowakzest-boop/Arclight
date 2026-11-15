@@ -45,7 +45,6 @@ import net.minecraft.world.level.NaturalSpawner;
 import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
 import org.slf4j.Logger;
 import org.spigotmc.SpigotWorldConfig;
-import org.spigotmc.TrackingRange;
 import org.spongepowered.configurate.objectmapping.ConfigSerializable;
 import org.spongepowered.configurate.objectmapping.meta.Required;
 import org.spongepowered.configurate.objectmapping.meta.Setting;
@@ -148,7 +147,7 @@ public class WorldConfiguration extends ConfigurationPart {
             public boolean perPlayerMobSpawns = true;
             public boolean scanForLegacyEnderDragon = true;
             @MergeMap
-            public Reference2IntMap<MobCategory> spawnLimits = Util.make(new Reference2IntOpenHashMap<>(NaturalSpawner.SPAWNING_CATEGORIES.length), map -> Arrays.stream(NaturalSpawner.SPAWNING_CATEGORIES).forEach(mobCategory -> map.put(mobCategory, -1)));
+            public Reference2IntMap<MobCategory> spawnLimits = Util.make(new Reference2IntOpenHashMap<>(MobCategory.values().length), map -> Arrays.stream(MobCategory.values()).forEach(mobCategory -> map.put(mobCategory, -1)));
             @MergeMap
             public Map<MobCategory, DespawnRange> despawnRanges = Arrays.stream(MobCategory.values()).collect(Collectors.toMap(Function.identity(), category -> new DespawnRange(category.getNoDespawnDistance(), category.getDespawnDistance())));
 
@@ -229,13 +228,13 @@ public class WorldConfiguration extends ConfigurationPart {
             public DoorBreakingDifficulty doorBreakingDifficulty;
 
             public class DoorBreakingDifficulty extends ConfigurationPart { // TODO convert to map at some point
-                public List<Difficulty> zombie = Arrays.stream(Difficulty.values()).filter(Zombie.DOOR_BREAKING_PREDICATE).toList();
+                public List<Difficulty> zombie = Arrays.stream(Difficulty.values()).filter(difficulty -> difficulty == Difficulty.HARD).toList();
                 public List<Difficulty> husk = Arrays.stream(Difficulty.values()).filter(Zombie.DOOR_BREAKING_PREDICATE).toList();
                 @Setting("zombie_villager")
                 public List<Difficulty> zombieVillager = Arrays.stream(Difficulty.values()).filter(Zombie.DOOR_BREAKING_PREDICATE).toList();
                 @Setting("zombified_piglin")
                 public List<Difficulty> zombified_piglin = Arrays.stream(Difficulty.values()).filter(Zombie.DOOR_BREAKING_PREDICATE).toList();
-                public List<Difficulty> vindicator = Arrays.stream(Difficulty.values()).filter(Vindicator.DOOR_BREAKING_PREDICATE).toList();
+                public List<Difficulty> vindicator = Arrays.stream(Difficulty.values()).filter(difficulty -> difficulty == Difficulty.HARD).toList();
 
                 // TODO remove when this becomes a proper map
                 public List<Difficulty> get(EntityType<?> type) {
@@ -309,27 +308,27 @@ public class WorldConfiguration extends ConfigurationPart {
             public IntOr.Default other = IntOr.Default.USE_DEFAULT;
 
             public int get(Entity entity, int def) {
-                switch (TrackingRange.getTrackingRangeType(entity)) {
-                    case PLAYER -> {
-                        return player.or(def);
-                    }
-                    case ANIMAL -> {
-                        return animal.or(def);
-                    }
-                    case MONSTER -> {
-                        return monster.or(def);
-                    }
-                    case MISC -> {
-                        return misc.or(def);
-                    }
-                    case ENDERDRAGON -> {
-                        return -1; // Ender dragon is exempt
-                    }
-                    case DISPLAY -> {
-                        return display.or(def);
-                    }
+                if (entity instanceof net.minecraft.server.level.ServerPlayer) {
+                    return player.or(def);
                 }
-                
+                if (entity instanceof net.minecraft.world.entity.boss.enderdragon.EnderDragon) {
+                    return -1; // Ender dragon is exempt
+                }
+                if (entity instanceof Display) {
+                    return display.or(def);
+                }
+                if (entity.getType().getCategory() == MobCategory.MONSTER) {
+                    return monster.or(def);
+                }
+                if (entity instanceof net.minecraft.world.entity.Mob) {
+                    return animal.or(def);
+                }
+                if (entity instanceof net.minecraft.world.entity.item.ItemEntity
+                    || entity instanceof net.minecraft.world.entity.ExperienceOrb
+                    || entity instanceof net.minecraft.world.entity.decoration.ItemFrame
+                    || entity instanceof net.minecraft.world.entity.decoration.Painting) {
+                    return misc.or(def);
+                }
                 return other.or(def);
             }
         }

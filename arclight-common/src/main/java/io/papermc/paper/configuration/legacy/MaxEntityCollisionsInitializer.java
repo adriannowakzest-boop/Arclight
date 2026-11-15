@@ -20,7 +20,7 @@ public class MaxEntityCollisionsInitializer implements NodeResolver {
     public @Nullable ConfigurationNode resolve(ConfigurationNode parent) {
         final String key = NamingSchemes.LOWER_CASE_DASHED.coerce(this.name);
         final ConfigurationNode node = parent.node(key);
-        final int old = this.spigotConfig.getInt("max-entity-collisions", -1, false);
+        final int old = this.spigotConfig.getInt("max-entity-collisions", -1);
         if (node.virtual() && old > -1) {
             node.raw(old);
         }
