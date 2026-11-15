@@ -22,4 +22,8 @@ public class ArclightModHorse extends CraftAbstractHorse {
     public @NotNull EntityCategory getCategory() {
         return EntityCategory.NONE;
     }
+    @Override
+    public void setEating(boolean eating) {
+        getHandle().setEating(eating);
+    }
 }

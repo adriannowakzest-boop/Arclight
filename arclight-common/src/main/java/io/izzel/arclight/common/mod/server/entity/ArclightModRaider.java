@@ -9,4 +9,8 @@ public class ArclightModRaider extends CraftRaider {
     public ArclightModRaider(CraftServer server, Raider entity) {
         super(server, entity);
     }
+    @Override
+    public int getPossibleExperienceReward() {
+        return getHandle().getExperienceReward();
+    }
 }
