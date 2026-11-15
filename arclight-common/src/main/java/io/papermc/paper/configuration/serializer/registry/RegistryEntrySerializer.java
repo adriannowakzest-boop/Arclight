@@ -30,7 +30,7 @@ abstract class RegistryEntrySerializer<T, R> extends ScalarSerializer<T> {
     }
 
     protected final Registry<R> registry() {
-        return MinecraftServer.getServer().registryAccess().registryOrThrow(this.registryKey); // TODO don't depend on MinecraftServer#getServer
+        return net.minecraftforge.server.ServerLifecycleHooks.getCurrentServer().registryAccess().registryOrThrow(this.registryKey); // TODO don't depend on MinecraftServer#getServer
     }
 
     protected abstract T convertFromResourceKey(ResourceKey<R> key) throws SerializationException;
