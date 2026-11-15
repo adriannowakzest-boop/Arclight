@@ -1,6 +1,8 @@
 package io.papermc.paper.configuration;
 
 import com.google.common.base.Suppliers;
+import io.izzel.arclight.common.bridge.core.world.server.ServerWorldBridge;
+import net.minecraftforge.server.ServerLifecycleHooks;
 import com.google.common.collect.Table;
 import com.mojang.logging.LogUtils;
 import io.leangen.geantyref.TypeToken;
@@ -63,6 +65,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.List;
+import java.util.Map;
+import java.util.WeakHashMap;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -73,6 +77,7 @@ import static io.leangen.geantyref.GenericTypeReflector.erase;
 public class PaperConfigurations extends Configurations<GlobalConfiguration, WorldConfiguration> {
 
     private static final Logger LOGGER = LogUtils.getLogger();
+    private final Map<ServerLevel, WorldConfiguration> worldConfigurations = new WeakHashMap<>();
     static final String GLOBAL_CONFIG_FILE_NAME = "paper-global.yml";
     static final String WORLD_DEFAULTS_CONFIG_FILE_NAME = "paper-world-defaults.yml";
     static final String WORLD_CONFIG_FILE_NAME = "paper-world.yml";
@@ -132,7 +137,7 @@ public class PaperConfigurations extends Configurations<GlobalConfiguration, Wor
     public static final Supplier<SpigotWorldConfig> SPIGOT_WORLD_DEFAULTS = Suppliers.memoize(() -> new SpigotWorldConfig(RandomStringUtils.randomAlphabetic(255)) {
         @Override // override to ensure "verbose" is false
         public void init() {
-            SpigotConfig.readConfig(SpigotWorldConfig.class, this);
+            super.init();
         }
     });
     static final ContextKey<Supplier<SpigotWorldConfig>> SPIGOT_WORLD_CONFIG_CONTEXT_KEY = new ContextKey<>(new TypeToken<Supplier<SpigotWorldConfig>>() {}, "spigot world config");
@@ -219,7 +224,7 @@ public class PaperConfigurations extends Configurations<GlobalConfiguration, Wor
                     .register(DurationOrDisabled.SERIALIZER)
                     .register(EngineMode.SERIALIZER)
                     .register(NbtPathSerializer.SERIALIZER)
-                    .register(FallbackValueSerializer.create(contextMap.require(SPIGOT_WORLD_CONFIG_CONTEXT_KEY).get(), MinecraftServer::getServer))
+                    .register(FallbackValueSerializer.create(contextMap.require(SPIGOT_WORLD_CONFIG_CONTEXT_KEY).get(), ServerLifecycleHooks::getCurrentServer))
                     .register(new RegistryValueSerializer<>(new TypeToken<EntityType<?>>() {}, Registries.ENTITY_TYPE, true))
                     .register(new RegistryValueSerializer<>(Item.class, Registries.ITEM, true))
                     .register(new RegistryHolderSerializer<>(new TypeToken<ConfiguredFeature<?, ?>>() {}, Registries.CONFIGURED_FEATURE, false))
@@ -291,12 +296,21 @@ public class PaperConfigurations extends Configurations<GlobalConfiguration, Wor
         return ConfigurationPart.class.isAssignableFrom(erase(type));
     }
 
+    public WorldConfiguration getWorldConfiguration(ServerLevel level) {
+        return this.worldConfigurations.get(level);
+    }
+
     public void reloadConfigs(MinecraftServer server) {
         try {
             this.initializeGlobalConfiguration(reloader(this.globalConfigClass, GlobalConfiguration.get()));
             this.initializeWorldDefaultsConfiguration();
             for (ServerLevel level : server.getAllLevels()) {
-                this.createWorldConfig(createWorldContextMap(level), reloader(this.worldConfigClass, level.paperConfig()));
+                ContextMap contextMap = createWorldContextMap(level);
+                WorldConfiguration current = this.worldConfigurations.get(level);
+                WorldConfiguration updated = current == null
+                    ? this.createWorldConfig(contextMap)
+                    : this.createWorldConfig(contextMap, reloader(this.worldConfigClass, current));
+                this.worldConfigurations.put(level, updated);
             }
         } catch (Exception ex) {
             throw new RuntimeException("Could not reload paper configuration files", ex);
@@ -304,7 +318,8 @@ public class PaperConfigurations extends Configurations<GlobalConfiguration, Wor
     }
 
     private static ContextMap createWorldContextMap(ServerLevel level) {
-        return createWorldContextMap(level.convertable.levelDirectory.path(), level.serverLevelData.getLevelName(), level.dimension().location(), level.spigotConfig);
+        ServerWorldBridge bridge = (ServerWorldBridge) (Object) level;
+        return createWorldContextMap(bridge.bridge$getWorldFolder(), level.serverLevelData.getLevelName(), level.dimension().location(), bridge.bridge$getSpigotConfig());
     }
 
     public static ContextMap createWorldContextMap(Path dir, String levelName, ResourceLocation worldKey, SpigotWorldConfig spigotConfig) {
@@ -410,7 +425,7 @@ public class PaperConfigurations extends Configurations<GlobalConfiguration, Wor
         ConfigurationSection worlds = global.createSection("__________WORLDS__________");
         worlds.set("__defaults__", YamlConfiguration.loadConfiguration(this.globalFolder.resolve(this.defaultWorldConfigFileName).toFile()));
         for (ServerLevel level : server.getAllLevels()) {
-            worlds.set(level.getWorld().getName(), YamlConfiguration.loadConfiguration(getWorldConfigFile(level).toFile()));
+            worlds.set(((ServerWorldBridge) (Object) level).bridge$getWorld().getName(), YamlConfiguration.loadConfiguration(getWorldConfigFile(level).toFile()));
         }
         return global;
     }
