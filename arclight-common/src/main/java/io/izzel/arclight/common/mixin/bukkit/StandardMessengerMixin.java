@@ -11,7 +11,7 @@ public abstract class StandardMessengerMixin implements Messenger {
 
     @ModifyConstant(
             method = "validateAndCorrectChannel",
-            constant = @Constant(intValue = Messenger.MAX_CHANNEL_SIZE)
+            constant = @Constant(intValue = 64)
     )
     private static int modifyMaxChannelSize(int original) {
         return 256;
