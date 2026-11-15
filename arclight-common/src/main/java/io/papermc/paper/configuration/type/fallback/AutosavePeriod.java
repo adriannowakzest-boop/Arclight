@@ -1,6 +1,5 @@
 package io.papermc.paper.configuration.type.fallback;
 
-import net.minecraft.server.MinecraftServer;
 import org.spongepowered.configurate.serialize.SerializationException;
 
 import java.util.Map;
@@ -25,15 +24,15 @@ public class AutosavePeriod extends FallbackValue.Int {
 
     @Override
     protected Set<ContextKey<?>> required() {
-        return Set.of(FallbackValue.MINECRAFT_SERVER);
+        return Set.of();
     }
 
     @Override
     protected int fallback() {
-        return this.get(FallbackValue.MINECRAFT_SERVER).get().autosavePeriod;
+        return 6000; // Vanilla Minecraft 1.20.1 autosave interval (ticks).
     }
 
     public static AutosavePeriod def() {
-        return new AutosavePeriod(FallbackValue.MINECRAFT_SERVER.singleton(MinecraftServer::getServer));
+        return new AutosavePeriod(Map.of());
     }
 }
