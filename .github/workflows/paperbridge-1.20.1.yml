@@ -46,6 +46,10 @@ jobs:
       - name: Verify packaged installer, API, and Mixin wiring
         run: bash scripts/verify-paperbridge-artifact.sh build/libs
 
+      - name: Smoke test Forge server startup and shutdown
+        timeout-minutes: 15
+        run: bash scripts/smoke-test-server.sh build/libs/*.jar
+
       - name: Prepare pinned Paper 1.20.1 upstream sources
         run: bash scripts/prepare-paper-upstream.sh
 
