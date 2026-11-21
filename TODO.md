@@ -21,13 +21,15 @@ Cel: rozwijać Arclight dla Minecraft 1.20.1 tak, aby na jednym serwerze działa
 - [x] Uruchomić `./gradlew cleanBuild remapSpigotJar idea --no-daemon --stacktrace` na czystym środowisku Java 17 (PaperBridge CI, Java 17).
 - [x] Naprawić błędy kompilacji dla Forge 47.4.29.
 - [x] Potwierdzić lokalnie kompilację `:arclight-common:compileJava` na JDK 17 z przypiętym Paper API.
-- [ ] Uruchomić testy `:arclight-common:test` w GitHub Actions i sprawdzić wynik.
+- [x] Uruchomić testy `:arclight-common:test` w GitHub Actions (PaperBridge run 43718829897 — sukces).
 - [ ] Potwierdzić, że Forge `1.20.1-47.4.29` rozwiązuje się z Maven i uruchamia serwer.
 - [x] Przypiąć wersję Paper API do dostępnego buildu zgodnego z Minecraft 1.20.1.
-- [ ] Potwierdzić w GitHub Actions, że Paper API rozwiązuje się poprawnie i nie powoduje konfliktów zależności ze Spigot/Bukkit.
+- [x] Potwierdzić w GitHub Actions rozwiązywanie przypiętego Paper API 1.20.1 oraz obecność jego klas w artefakcie.
+- [ ] Zweryfikować brak konfliktów zależności Paper API ze Spigot/Bukkit.
 - [ ] Sprawdzić, czy pakowanie API do JAR-a nie duplikuje klas lub bibliotek dostarczanych przez Forge/Arclight.
-- [ ] Zweryfikować generowanie `mixins.arclight.refmap.json` oraz jego obecność w artefakcie.
-- [ ] Zweryfikować manifest `MixinConnector`, ładowanie konfiguracji Mixin i kolejność inicjalizacji.
+- [x] Zweryfikować wygenerowanie `mixins.arclight.refmap.json` i jego obecność w artefakcie CI.
+- [x] Zweryfikować wpis manifestu `MixinConnector`, pliki konfiguracji Mixin, klasy mixinów i refmapę w artefakcie CI.
+- [ ] Zweryfikować runtime'owe ładowanie Mixin i kolejność inicjalizacji.
 - [ ] Uruchomić serwer testowy z czystym katalogiem świata i potwierdzić poprawny start, zatrzymanie oraz ponowny start.
 - [ ] Zachować logi builda i startu jako artefakty CI.
 
@@ -115,8 +117,8 @@ Istniejące mosty Forge → Bukkit w kodzie obejmują event bus, obsługę zdarz
 
 ## 6. Wydanie i dokumentacja
 
-- [ ] Dodać testy regresyjne uruchamiane przy każdym pushu do `paperbridge-1.20.1`.
-- [ ] Dodać walidację plików Mixin i refmap podczas CI.
+- [x] Uruchamiać testy regresyjne adaptera deskryptora Paper przy każdym pushu do `paperbridge-1.20.1`.
+- [x] Walidować konfiguracje Mixin, klasy i refmapę podczas CI.
 - [ ] Publikować tylko artefakty, które przeszły build i test startu.
 - [ ] Opisać instalację serwera, modów Forge i pluginów.
 - [ ] Udokumentować różnice między `plugin.yml` i `paper-plugin.yml`.
