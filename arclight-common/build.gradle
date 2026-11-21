@@ -87,7 +87,11 @@ dependencies {
     implementation project(':i18n-config')
     // Bundle Paper API for plugin-side binary linkage. Paper server implementation
     // patches are still a separate compatibility milestone.
-    embed "io.papermc.paper:paper-api:$paperApiVersion"
+    embed("io.papermc.paper:paper-api:$paperApiVersion") {
+        // Forge loads Maven Resolver as named modules. Keep its SPI classes out
+        // of the automatic Arclight module to avoid a JPMS split-package error.
+        exclude group: 'org.apache.maven.resolver', module: 'maven-resolver-spi'
+    }
 
     testImplementation "junit:junit:4.13.2"
     testImplementation "io.papermc.paper:paper-api:$paperApiVersion"
